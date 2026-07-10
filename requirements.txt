@@ -1,6 +1,5 @@
 numpy
 matplotlib
 ipywidgets
-voila
 plotly
 anywidget
