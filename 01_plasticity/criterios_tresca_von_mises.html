@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Criterios de plastificación: Tresca y Von Mises</title>
+<style>
+  :root{
+    --vm:#2E6FB0; --vm-tint:#E7F0F9; --tr:#E08A00; --tr-tint:#FCF1DC;
+    --dark:#123; --text:#1A2430; --muted:#5B6675; --line:#DCE3EA;
+    --green:#2E8B57; --orange:#E08A00; --red:#C0392B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;padding:22px 26px;font-family:"Segoe UI",Calibri,Arial,sans-serif;
+       color:var(--text);background:#fff;max-width:1180px}
+  h1{font-size:25px;color:#1c2b3a;margin:0 0 3px}
+  .sub{color:var(--muted);font-size:14px;margin-bottom:16px}
+  .sub b{color:var(--text)}
+  .eqbar{display:flex;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+  .eq{flex:1;min-width:300px;border-radius:7px;padding:9px 14px;
+      font-family:Cambria,Georgia,"Times New Roman",serif;font-size:16px}
+  .eq.vm{background:var(--vm-tint);border:1px solid var(--vm)}
+  .eq.tr{background:var(--tr-tint);border:1px solid var(--tr)}
+  .eq.cmp{background:#F3F5F7;border:1px solid var(--line)}
+  .eq b{display:block;font-family:"Segoe UI",Arial,sans-serif;font-size:12.5px;
+        margin-bottom:3px;letter-spacing:.02em}
+  .eq.vm b{color:var(--vm)} .eq.tr b{color:#b96f00}
+  .eq small{display:block;font-family:"Segoe UI",Arial,sans-serif;font-size:11.5px;
+            color:var(--muted);margin-top:4px;line-height:1.35}
+  .wrap{display:flex;gap:22px;align-items:flex-start;flex-wrap:wrap}
+  .panel{width:255px;flex-shrink:0}
+  .ctrl{margin-bottom:13px}
+  .ctrl label{display:flex;justify-content:space-between;font-size:13.5px;
+              font-weight:600;margin-bottom:4px}
+  .ctrl .val{color:var(--vm);font-family:Cambria,Georgia,serif}
+  input[type=range]{width:100%;accent-color:var(--vm);height:18px}
+  input.stress{accent-color:#555}
+  canvas{border:1px solid var(--line);border-radius:7px;background:#fff;
+         max-width:100%;touch-action:none}
+  #cvPS{cursor:crosshair}
+  #cv3D{cursor:grab}
+  .status{margin-top:6px;padding:10px 12px;border-radius:7px;font-size:13px;
+          line-height:1.5;border:1px solid var(--line);background:#F7F9FA}
+  .status .big{font-weight:700;font-size:13.5px}
+  .btns{display:flex;gap:8px;margin:14px 0 4px}
+  button{flex:1;padding:8px 10px;font-size:12.5px;font-weight:600;font-family:inherit;
+         border-radius:6px;cursor:pointer;border:1px solid var(--vm);background:#fff;color:var(--vm)}
+  button:hover{background:var(--vm-tint)}
+  .row{display:flex;gap:22px;flex-wrap:wrap;margin-top:22px;align-items:flex-start}
+  .fig{display:flex;flex-direction:column}
+  .fig h3{margin:0 0 6px;font-size:14.5px;color:#1c2b3a}
+  .fig .cap{font-size:11.5px;color:var(--muted);margin-top:5px;max-width:440px;line-height:1.4}
+  .legend{display:flex;gap:16px;font-size:12.5px;margin:2px 0 8px;flex-wrap:wrap}
+  .legend span{display:inline-flex;align-items:center;gap:5px}
+  .sw{width:22px;height:0;border-top-width:3px;border-top-style:solid;display:inline-block}
+  .note{margin-top:22px;font-size:12.5px;color:var(--muted);line-height:1.6;
+        border-top:1px solid var(--line);padding-top:12px;max-width:960px}
+  .note b{color:var(--text)}
+  .pill{display:inline-block;padding:1px 7px;border-radius:10px;font-size:11.5px;font-weight:700}
+</style>
+</head>
+<body>
+
+<h1>Criterios de plastificación: Tresca y Von Mises</h1>
+<div class="sub">Teoría de la Plasticidad — <b>Bloque I, §2.2</b>. Todo se calcula en el navegador (JavaScript); mueve los deslizadores, <b>pulsa/arrastra el punto</b> en la gráfica de tensión plana y <b>gira el 3D con el ratón</b>.</div>
+
+<div class="eqbar">
+  <div class="eq tr"><b>TRESCA — tensión tangencial máxima</b>
+    σ₁ − σ₃ = Y &nbsp;&nbsp;⟹&nbsp;&nbsp; k = Y/2 = 0,500 Y
+    <small>Plastifica cuando τ_máx = (σ₁−σ₃)/2 alcanza k. Calibrado con el ensayo de tracción (Y,0,0).</small></div>
+  <div class="eq vm"><b>VON MISES — energía de distorsión</b>
+    J₂′ = k² ,&nbsp; σ̄ = √(3J₂′) = Y &nbsp;⟹&nbsp; k = Y/√3 ≈ 0,577 Y
+    <small>σ̄ = √(½[(σ₁−σ₂)²+(σ₂−σ₃)²+(σ₃−σ₁)²]). Calibrado también con (Y,0,0).</small></div>
+  <div class="eq cmp"><b>COMPARACIÓN</b>
+    Coinciden en tracción simple; difieren <b>15,5 %</b> (2/√3) en cortante puro.
+    <small>Tresca queda inscrito en Von Mises y ambos se tocan en los 6 estados uniaxiales.</small></div>
+</div>
+
+<div class="wrap">
+  <div class="panel">
+    <div class="ctrl">
+      <label>Límite elástico Y <span class="val" id="vY">250 MPa</span></label>
+      <input type="range" id="Y" min="50" max="600" step="10" value="250">
+    </div>
+    <div style="font-size:12px;color:var(--muted);font-weight:700;margin:14px 0 6px;
+                border-top:1px solid var(--line);padding-top:10px">ESTADO DE TENSIÓN (plano)</div>
+    <div class="ctrl">
+      <label>σ<sub>xx</sub> <span class="val" id="vXX">0 MPa</span></label>
+      <input class="stress" type="range" id="sxx" min="-600" max="600" step="10" value="0">
+    </div>
+    <div class="ctrl">
+      <label>σ<sub>yy</sub> <span class="val" id="vYY">0 MPa</span></label>
+      <input class="stress" type="range" id="syy" min="-600" max="600" step="10" value="0">
+    </div>
+    <div class="ctrl">
+      <label>τ<sub>xy</sub> <span class="val" id="vTXY">135 MPa</span></label>
+      <input class="stress" type="range" id="txy" min="-400" max="400" step="5" value="135">
+    </div>
+
+    <div class="btns">
+      <button id="reset">Restablecer</button>
+    </div>
+
+    <div class="status" id="status"></div>
+
+    <div style="font-size:11.5px;color:var(--muted);margin-top:12px;line-height:1.5">
+      🖱️ En la gráfica de <b>tensión plana</b> puedes pulsar o arrastrar para colocar el punto
+      (elige un estado principal: τ<sub>xy</sub>=0). El mismo estado se muestra en las tres vistas.
+    </div>
+  </div>
+
+  <div class="fig">
+    <h3>Tensión plana (σ₃ = 0): hexágono vs. elipse</h3>
+    <div class="legend">
+      <span><i class="sw" style="border-color:var(--vm)"></i>Von Mises (elipse)</span>
+      <span><i class="sw" style="border-color:var(--tr)"></i>Tresca (hexágono)</span>
+    </div>
+    <canvas id="cvPS" width="500" height="500"></canvas>
+  </div>
+</div>
+
+<div class="row">
+  <div class="fig">
+    <h3>Plano desviador (plano π)</h3>
+    <canvas id="cvPi" width="430" height="430"></canvas>
+    <div class="cap">Vista a lo largo de la recta hidrostática σ₁=σ₂=σ₃. Von Mises es la
+      circunferencia de radio √(2/3)·Y; Tresca, el hexágono inscrito. Separación nula en los
+      vértices (uniaxial), máxima (15,5 %) en cortante puro.</div>
+  </div>
+  <div class="fig">
+    <h3>Espacio 3D — cilindro vs. prisma hexagonal &nbsp;<span style="font-size:11px;color:var(--muted)">(arrastra para girar)</span></h3>
+    <canvas id="cv3D" width="500" height="460"></canvas>
+    <div class="cap">Como ningún criterio depende de la presión hidrostática, ambas superficies
+      son infinitas en la dirección σ₁=σ₂=σ₃. Lo de arriba son cortes de estos volúmenes.</div>
+  </div>
+</div>
+
+<div class="note">
+  <b>Código de color del punto:</b>
+  <span class="pill" style="background:#dff0e6;color:var(--green)">verde</span> elástico según ambos ·
+  <span class="pill" style="background:#fbeacc;color:#a86500">naranja</span> plastifica solo según Tresca (banda entre hexágono y elipse) ·
+  <span class="pill" style="background:#f7dcd8;color:var(--red)">rojo</span> plastifica según ambos.
+  &nbsp; Con endurecimiento isótropo (§3.1), subir <b>Y</b> expande ambas superficies homotéticamente, sin cambiar su forma.
+</div>
+
+<script>
+"use strict";
+// ================== estado ==================
+const P = {Y:250, sxx:0, syy:0, txy:135};
+
+// ================== álgebra ==================
+const S2 = Math.SQRT2, S23 = Math.sqrt(2/3), S16 = Math.sqrt(1/6);
+// base ortonormal: n = eje hidrostático, e1/e2 generan el plano pi
+const n  = [1/Math.sqrt(3), 1/Math.sqrt(3), 1/Math.sqrt(3)];
+const e1 = [1/S2, -1/S2, 0];
+const e2 = [1/Math.sqrt(6), 1/Math.sqrt(6), -2/Math.sqrt(6)];
+
+function principal(sxx, syy, txy){
+  const avg = 0.5*(sxx+syy), R = Math.hypot(0.5*(sxx-syy), txy);
+  return [avg+R, avg-R];                 // s1 >= s2
+}
+function vmPlane(sxx, syy, txy){ return Math.sqrt(sxx*sxx - sxx*syy + syy*syy + 3*txy*txy); }
+function tresca3(s1,s2,s3){ return Math.max(s1,s2,s3) - Math.min(s1,s2,s3); }
+
+// proyección al plano pi
+function piProj(p){
+  const m = (p[0]+p[1]+p[2])/3, d = [p[0]-m, p[1]-m, p[2]-m];
+  return [d[0]*e1[0]+d[1]*e1[1]+d[2]*e1[2], d[0]*e2[0]+d[1]*e2[1]+d[2]*e2[2]];
+}
+// vértices del hexágono de Tresca en el plano pi (estados uniaxiales, ordenados por ángulo)
+function piHex(Y){
+  const states = [[Y,0,0],[0,Y,0],[0,0,Y],[-Y,0,0],[0,-Y,0],[0,0,-Y]];
+  let pts = states.map(piProj);
+  pts.sort((a,b)=>Math.atan2(a[1],a[0]) - Math.atan2(b[1],b[0]));
+  pts.push(pts[0]);
+  return pts;
+}
+
+// ================== verdicto / color ==================
+function verdict(){
+  const [s1,s2] = principal(P.sxx, P.syy, P.txy);
+  const svm = vmPlane(P.sxx, P.syy, P.txy);        // = vonMises(s1,s2,0)
+  const st  = tresca3(s1, s2, 0);
+  const inVM = svm <= P.Y, inTR = st <= P.Y;
+  let col, txt;
+  if (inVM && inTR){ col = '#2E8B57'; txt = 'ELÁSTICO según ambos criterios'; }
+  else if (inVM && !inTR){ col = '#E08A00'; txt = 'PLASTIFICA según Tresca · ELÁSTICO según Von Mises'; }
+  else { col = '#C0392B'; txt = 'PLASTIFICA según ambos criterios'; }
+  return {s1, s2, svm, st, col, txt};
+}
+
+// ================== mapa 2D (aspecto igual, marco FIJO al Y por defecto) ==================
+function mapper(canvas, half){
+  const w = canvas.width, h = canvas.height, m = 46;
+  const sc = Math.min((w-2*m)/(2*half), (h-2*m)/(2*half));
+  const cx = w/2, cy = h/2;
+  return {
+    X: v => cx + v*sc,  Y: v => cy - v*sc,
+    invX: px => (px - cx)/sc,  invY: py => (cy - py)/sc,
+    sc, cx, cy, m, w, h
+  };
+}
+const PS_HALF = 1.18*S2*250;             // marco fijo (Y=250): elipse llena el cuadro
+const PI_HALF = 1.75*S23*250;
+
+// ================== dibujo: ejes 2D ==================
+function grid2d(g, M, xlab, ylab, unit){
+  g.clearRect(0,0,M.w,M.h);
+  // rejilla
+  g.strokeStyle = '#EEF2F5'; g.lineWidth = 1;
+  const step = 100, lim = Math.ceil(PS_HALF/step)*step;
+  // (rejilla ligera, sin etiquetar todo)
+  // ejes
+  g.strokeStyle = '#9AA6B2'; g.lineWidth = 1;
+  g.beginPath(); g.moveTo(M.X(-PS_HALF*2),M.Y(0)); g.lineTo(M.X(PS_HALF*2),M.Y(0));
+  g.moveTo(M.X(0),M.Y(-PS_HALF*2)); g.lineTo(M.X(0),M.Y(PS_HALF*2)); g.stroke();
+}
+
+// ================== PANEL 1: tensión plana ==================
+const cvPS = document.getElementById('cvPS'), gPS = cvPS.getContext('2d');
+const MPS = mapper(cvPS, PS_HALF);
+
+function ellipsePts(Y){
+  const pts = [];
+  for (let i=0;i<=180;i++){
+    const t = i/180*2*Math.PI;
+    const u = S2*Y*Math.cos(t), v = S23*Y*Math.sin(t);
+    pts.push([(u+v)/S2, (u-v)/S2]);
+  }
+  return pts;
+}
+function hexPts(Y){ return [[Y,0],[Y,Y],[0,Y],[-Y,0],[-Y,-Y],[0,-Y],[Y,0]]; }
+
+function drawPS(){
+  const g = gPS, M = MPS, Y = P.Y, V = verdict();
+  grid2d(g, M);
+  // ticks
+  g.fillStyle = '#8892A0'; g.font = '11px Segoe UI, Arial'; g.textAlign = 'center';
+  for (let v=-400; v<=400; v+=200){ if(!v) continue;
+    g.fillText(v, M.X(v), M.cy+15); g.textAlign='right'; g.fillText(v, M.cx-6, M.Y(v)+4); g.textAlign='center'; }
+  // diagonal s1=s2
+  g.strokeStyle = '#C9D3DC'; g.setLineDash([5,4]); g.lineWidth = 1;
+  g.beginPath(); g.moveTo(M.X(-PS_HALF),M.Y(-PS_HALF)); g.lineTo(M.X(PS_HALF),M.Y(PS_HALF)); g.stroke(); g.setLineDash([]);
+
+  // Von Mises (elipse)
+  const el = ellipsePts(Y);
+  g.beginPath(); el.forEach((p,i)=> i?g.lineTo(M.X(p[0]),M.Y(p[1])):g.moveTo(M.X(p[0]),M.Y(p[1])));
+  g.closePath(); g.fillStyle='rgba(46,111,176,.06)'; g.fill();
+  g.strokeStyle='#2E6FB0'; g.lineWidth=2.4; g.stroke();
+  // Tresca (hexágono)
+  const hx = hexPts(Y);
+  g.beginPath(); hx.forEach((p,i)=> i?g.lineTo(M.X(p[0]),M.Y(p[1])):g.moveTo(M.X(p[0]),M.Y(p[1])));
+  g.fillStyle='rgba(224,138,0,.06)'; g.fill();
+  g.strokeStyle='#E08A00'; g.lineWidth=2.4; g.stroke();
+  // 6 puntos de coincidencia
+  g.fillStyle='#3a4653';
+  hx.slice(0,6).forEach(p=>{ g.beginPath(); g.arc(M.X(p[0]),M.Y(p[1]),3.2,0,7); g.fill(); });
+
+  // punto de tensión
+  g.strokeStyle=V.col; g.setLineDash([2,3]); g.lineWidth=1.2;
+  g.beginPath(); g.moveTo(M.X(0),M.Y(0)); g.lineTo(M.X(V.s1),M.Y(V.s2)); g.stroke(); g.setLineDash([]);
+  g.beginPath(); g.arc(M.X(V.s1),M.Y(V.s2),8,0,7); g.fillStyle=V.col; g.fill();
+  g.lineWidth=1.4; g.strokeStyle='#1A2430'; g.stroke();
+  g.fillStyle=V.col; g.font='12px Segoe UI, Arial'; g.textAlign='left';
+  g.fillText('('+V.s1.toFixed(0)+', '+V.s2.toFixed(0)+')', M.X(V.s1)+11, M.Y(V.s2)-2);
+  // etiquetas de eje
+  g.fillStyle='#33404d'; g.font='bold 13px Cambria, Georgia, serif';
+  g.textAlign='right'; g.fillText('σ₁', M.X(PS_HALF)-4, M.cy-8);
+  g.textAlign='left';  g.fillText('σ₂', M.cx+8, M.Y(PS_HALF)+14);
+}
+
+// interacción ratón (clic/arrastre) sobre tensión plana
+let dragPS = false;
+function setPointFromPixel(ev){
+  const r = cvPS.getBoundingClientRect();
+  const px = (ev.clientX - r.left) * (cvPS.width / r.width);
+  const py = (ev.clientY - r.top ) * (cvPS.height/ r.height);
+  let x = MPS.invX(px), y = MPS.invY(py);
+  const clampSnap = (v,mn,mx,st)=> Math.max(mn, Math.min(mx, Math.round(v/st)*st));
+  P.sxx = clampSnap(x,-600,600,10);
+  P.syy = clampSnap(y,-600,600,10);
+  P.txy = 0;                              // estado principal
+  document.getElementById('sxx').value = P.sxx;
+  document.getElementById('syy').value = P.syy;
+  document.getElementById('txy').value = 0;
+  refresh();
+}
+cvPS.addEventListener('pointerdown', e=>{ dragPS=true; cvPS.setPointerCapture(e.pointerId); setPointFromPixel(e); });
+cvPS.addEventListener('pointermove', e=>{ if(dragPS) setPointFromPixel(e); });
+cvPS.addEventListener('pointerup',   ()=> dragPS=false);
+
+// ================== PANEL 2: plano pi ==================
+const cvPi = document.getElementById('cvPi'), gPi = cvPi.getContext('2d');
+const MPi = mapper(cvPi, PI_HALF);
+function drawPi(){
+  const g = gPi, M = MPi, Y = P.Y, V = verdict();
+  g.clearRect(0,0,M.w,M.h);
+  const R = S23*Y, a = R*Math.cos(Math.PI/6);   // radio VM y apotema hexágono
+  // ejes principales proyectados
+  g.strokeStyle='#D3DBE3'; g.lineWidth=1; g.fillStyle='#9AA6B2'; g.font='12px Cambria, serif';
+  [[[1,0,0],'σ₁'],[[0,1,0],'σ₂'],[[0,0,1],'σ₃']].forEach(([v,lab])=>{
+    const q = piProj([v[0]*R*1.5, v[1]*R*1.5, v[2]*R*1.5]);
+    g.beginPath(); g.moveTo(M.X(0),M.Y(0)); g.lineTo(M.X(q[0]),M.Y(q[1])); g.stroke();
+    g.fillText(lab, M.X(q[0])+3, M.Y(q[1])-3);
+  });
+  // círculo Von Mises
+  g.beginPath(); g.arc(M.cx, M.cy, R*M.sc, 0, 7);
+  g.fillStyle='rgba(46,111,176,.05)'; g.fill();
+  g.strokeStyle='#2E6FB0'; g.lineWidth=2.4; g.stroke();
+  // hexágono Tresca
+  const hp = piHex(Y);
+  g.beginPath(); hp.forEach((p,i)=> i?g.lineTo(M.X(p[0]),M.Y(p[1])):g.moveTo(M.X(p[0]),M.Y(p[1])));
+  g.fillStyle='rgba(224,138,0,.07)'; g.fill();
+  g.strokeStyle='#E08A00'; g.lineWidth=2.4; g.stroke();
+  // vértices
+  g.fillStyle='#3a4653';
+  hp.slice(0,6).forEach(p=>{ g.beginPath(); g.arc(M.X(p[0]),M.Y(p[1]),3.6,0,7); g.fill(); });
+  // marca cortante puro (15,5 %) en el centro de un lado
+  const mid = [0.5*(hp[0][0]+hp[1][0]), 0.5*(hp[0][1]+hp[1][1])];
+  const um = Math.hypot(mid[0],mid[1]);
+  const ux=mid[0]/um, uy=mid[1]/um;
+  g.strokeStyle='#1A2430'; g.lineWidth=1.6;
+  g.beginPath(); g.moveTo(M.X(ux*a),M.Y(uy*a)); g.lineTo(M.X(ux*R),M.Y(uy*R)); g.stroke();
+  g.fillStyle='#33404d'; g.font='11px Segoe UI, Arial'; g.textAlign='left';
+  g.fillText('cortante puro · 15,5 %', M.X(ux*R)+6, M.Y(uy*R)+4);
+  // punto de tensión proyectado
+  const q = piProj([V.s1, V.s2, 0]);
+  g.beginPath(); g.arc(M.X(q[0]),M.Y(q[1]),7,0,7); g.fillStyle=V.col; g.fill();
+  g.lineWidth=1.3; g.strokeStyle='#1A2430'; g.stroke();
+}
+
+// ================== PANEL 3: 3D ==================
+const cv3 = document.getElementById('cv3D'), g3 = cv3.getContext('2d');
+let yaw = 0.7, pitch = 0.35;
+const SC3 = 0.46, L3 = 1.6*250;          // escala y semilongitud fijas (Y=250)
+function rot(p){
+  const cy=Math.cos(yaw), sy=Math.sin(yaw);
+  let X = p[0]*cy + p[2]*sy, Z = -p[0]*sy + p[2]*cy, Yv = p[1];
+  const cx=Math.cos(pitch), sx=Math.sin(pitch);
+  let Y2 = Yv*cx - Z*sx, Z2 = Yv*sx + Z*cx;
+  return [X, Y2, Z2];
+}
+function prj(p){ const r=rot(p); return [cv3.width/2 + SC3*r[0], cv3.height/2 - SC3*r[1]]; }
+function poly3(pts, close){ const q=pts.map(prj); g3.beginPath();
+  q.forEach((p,i)=> i?g3.lineTo(p[0],p[1]):g3.moveTo(p[0],p[1])); if(close) g3.closePath(); }
+
+function ring(Y,h){ const out=[]; for(let i=0;i<=48;i++){ const t=i/48*2*Math.PI;
+  const R=S23*Y; out.push([h*n[0]+R*(Math.cos(t)*e1[0]+Math.sin(t)*e2[0]),
+                            h*n[1]+R*(Math.cos(t)*e1[1]+Math.sin(t)*e2[1]),
+                            h*n[2]+R*(Math.cos(t)*e1[2]+Math.sin(t)*e2[2])]); } return out; }
+function hexRing(Y,h){ const hp=piHex(Y); return hp.map(p=>[h*n[0]+p[0]*e1[0]+p[1]*e2[0],
+                                                            h*n[1]+p[0]*e1[1]+p[1]*e2[1],
+                                                            h*n[2]+p[0]*e1[2]+p[1]*e2[2]]); }
+function draw3D(){
+  const Y=P.Y, V=verdict();
+  g3.clearRect(0,0,cv3.width,cv3.height);
+  // eje hidrostático
+  g3.strokeStyle='#9AA6B2'; g3.setLineDash([6,5]); g3.lineWidth=1.3;
+  poly3([[-n[0]*L3*1.25,-n[1]*L3*1.25,-n[2]*L3*1.25],[n[0]*L3*1.25,n[1]*L3*1.25,n[2]*L3*1.25]]); g3.stroke();
+  g3.setLineDash([]);
+  // ejes principales
+  const axcol=['#C0392B','#2E8B57','#2E6FB0'], axlab=['σ₁','σ₂','σ₃'];
+  [[1,0,0],[0,1,0],[0,0,1]].forEach((v,i)=>{
+    g3.strokeStyle=axcol[i]; g3.lineWidth=1.4;
+    poly3([[0,0,0],[v[0]*L3*0.9,v[1]*L3*0.9,v[2]*L3*0.9]]); g3.stroke();
+    const q=prj([v[0]*L3*0.98,v[1]*L3*0.98,v[2]*L3*0.98]);
+    g3.fillStyle=axcol[i]; g3.font='bold 12px Cambria, serif'; g3.fillText(axlab[i],q[0]+2,q[1]);
+  });
+  // cilindro Von Mises: dos aros + silueta
+  g3.strokeStyle='rgba(46,111,176,.85)'; g3.lineWidth=1.8;
+  poly3(ring(Y,-L3)); g3.stroke(); poly3(ring(Y,L3)); g3.stroke();
+  g3.strokeStyle='rgba(46,111,176,.35)'; g3.lineWidth=1;
+  for(let k=0;k<24;k++){ const t=k/24*2*Math.PI, R=S23*Y;
+    const dir=[Math.cos(t)*e1[0]+Math.sin(t)*e2[0], Math.cos(t)*e1[1]+Math.sin(t)*e2[1], Math.cos(t)*e1[2]+Math.sin(t)*e2[2]];
+    poly3([[-L3*n[0]+R*dir[0],-L3*n[1]+R*dir[1],-L3*n[2]+R*dir[2]],
+           [ L3*n[0]+R*dir[0], L3*n[1]+R*dir[1], L3*n[2]+R*dir[2]]]); g3.stroke(); }
+  // prisma Tresca
+  const hb=hexRing(Y,-L3), ht=hexRing(Y,L3);
+  g3.strokeStyle='rgba(224,138,0,.95)'; g3.lineWidth=2;
+  poly3(hb,true); g3.stroke(); poly3(ht,true); g3.stroke();
+  for(let i=0;i<6;i++){ poly3([hb[i],ht[i]]); g3.stroke(); }
+  // punto de tensión (s1,s2,0)
+  const q=prj([V.s1,V.s2,0]);
+  g3.beginPath(); g3.arc(q[0],q[1],7,0,7); g3.fillStyle=V.col; g3.fill();
+  g3.lineWidth=1.4; g3.strokeStyle='#1A2430'; g3.stroke();
+}
+// arrastre para girar
+let drag3=false, lx=0, ly=0;
+cv3.addEventListener('pointerdown', e=>{ drag3=true; lx=e.clientX; ly=e.clientY; cv3.setPointerCapture(e.pointerId); cv3.style.cursor='grabbing'; });
+cv3.addEventListener('pointermove', e=>{ if(!drag3) return;
+  yaw += (e.clientX-lx)*0.01; pitch += (e.clientY-ly)*0.01;
+  pitch = Math.max(-1.4, Math.min(1.4, pitch)); lx=e.clientX; ly=e.clientY; draw3D(); });
+cv3.addEventListener('pointerup', ()=>{ drag3=false; cv3.style.cursor='grab'; });
+
+// ================== estado / control ==================
+function refreshStatus(){
+  const V = verdict();
+  document.getElementById('status').innerHTML =
+    '<span class="big" style="color:'+V.col+'">'+V.txt+'</span><br>'+
+    'σ̄<sub>VM</sub> = <b>'+V.svm.toFixed(0)+'</b> MPa &nbsp;·&nbsp; σ<sub>Tresca</sub> = <b>'+V.st.toFixed(0)+'</b> MPa &nbsp;·&nbsp; Y = '+P.Y.toFixed(0)+' MPa<br>'+
+    'principales: σ₁ = '+V.s1.toFixed(0)+', σ₂ = '+V.s2.toFixed(0)+', σ₃ = 0';
+}
+function refresh(){ drawPS(); drawPi(); draw3D(); refreshStatus(); }
+
+const fmt = {Y:'vY', sxx:'vXX', syy:'vYY', txy:'vTXY'};
+function syncLabels(){
+  document.getElementById('vY').textContent  = P.Y.toFixed(0)+' MPa';
+  document.getElementById('vXX').textContent = P.sxx.toFixed(0)+' MPa';
+  document.getElementById('vYY').textContent = P.syy.toFixed(0)+' MPa';
+  document.getElementById('vTXY').textContent= P.txy.toFixed(0)+' MPa';
+}
+['Y','sxx','syy','txy'].forEach(id=>{
+  document.getElementById(id).addEventListener('input', e=>{
+    P[id] = parseFloat(e.target.value); syncLabels(); refresh();
+  });
+});
+document.getElementById('reset').onclick = ()=>{
+  Object.assign(P, {Y:250, sxx:0, syy:0, txy:135});
+  document.getElementById('Y').value=250; document.getElementById('sxx').value=0;
+  document.getElementById('syy').value=0; document.getElementById('txy').value=135;
+  syncLabels(); refresh();
+};
+
+syncLabels(); refresh();
+</script>
+</body>
+</html>
