@@ -4,6 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ensayo de tracción uniaxial — simulación interactiva</title>
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] },
+    chtml: { scale: 1.02 },
+    options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+  };
+</script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
 <style>
   :root{
     --accent:#2E6FB0; --tint:#E7F0F9; --text:#1A2430; --muted:#5B6675; --line:#DCE3EA;
@@ -83,14 +91,14 @@
 
 <div class="eqbar">
   <div class="eq"><b>INGENIERIL</b>
-    S = F/A₀ ,&nbsp; e = ΔL/L₀
+    \( S = F/A_0 ,\quad e = \Delta L/L_0 \)
     <small>Referidas a la sección/longitud <i>iniciales</i>.</small></div>
   <div class="eq"><b>VERDADERA</b>
-    σ = F/A = S(1+e) ,&nbsp; ε = ln(1+e)
+    \( \sigma = F/A = S(1+e) ,\quad \varepsilon = \ln(1+e) \)
     <small>Referidas a la sección <i>instantánea</i>. Válidas hasta la estricción (deformación uniforme).</small></div>
   <div class="eq"><b>INESTABILIDAD (Considère)</b>
-    dσ/dε = σ &nbsp;⟹&nbsp; ε<sub>estr</sub> = n
-    <small>Para Hollomon σ = Kεⁿ, la deformación uniforme coincide con el exponente n.</small></div>
+    \( \dfrac{d\sigma}{d\varepsilon} = \sigma \;\Rightarrow\; \varepsilon_{\text{estr}} = n \)
+    <small>Para Hollomon \(\sigma = K\varepsilon^{n}\), la deformación uniforme coincide con el exponente n.</small></div>
 </div>
 
 <!-- ============================ §1.1–1.2 ============================ -->
@@ -127,26 +135,26 @@
     <div class="body">
       <h4>Magnitudes ingenieriles</h4>
       <p>Se refieren a la geometría <b>inicial</b> de la probeta (sección A₀, longitud L₀):</p>
-      <div class="eqn box">S = F / A₀ &nbsp;&nbsp;(tensión ingenieril) &nbsp;&nbsp;·&nbsp;&nbsp; e = ΔL / L₀ &nbsp;&nbsp;(deformación ingenieril)</div>
+      <div class="eqn box">\( S = \dfrac{F}{A_0}\ \text{(tensión ingenieril)} \qquad e = \dfrac{\Delta L}{L_0}\ \text{(deformación ingenieril)} \)</div>
 
       <h4>Magnitudes verdaderas</h4>
       <p>La <b>tensión verdadera</b> se refiere a la sección <b>instantánea</b> A (que va disminuyendo):</p>
-      <div class="eqn box">σ = F / A</div>
+      <div class="eqn box">\( \sigma = \dfrac{F}{A} \)</div>
       <p>La deformación ingenieril <b>no es aditiva</b> (si el proceso ocurre en dos etapas, e₁+e₂ ≠ e total). Por eso se define la <b>deformación verdadera</b> de forma incremental, sumando los alargamientos relativos sobre la longitud de cada instante:</p>
-      <div class="eqn box">dε = dL / L &nbsp;&nbsp;⟹&nbsp;&nbsp; ε = ∫<sub>L₀</sub><sup>L</sup> dL/L = ln(L / L₀)</div>
+      <div class="eqn box">\( d\varepsilon = \dfrac{dL}{L} \;\Rightarrow\; \varepsilon = \int_{L_0}^{L}\frac{dL}{L} = \ln\dfrac{L}{L_0} \)</div>
       <p>Así definida, ε <b>sí</b> es aditiva: ln(L₂/L₀) = ln(L₁/L₀) + ln(L₂/L₁).</p>
 
       <h4>Hipótesis clave: incompresibilidad plástica</h4>
       <p>En deformación plástica el volumen se conserva, de modo que:</p>
-      <div class="eqn box">V = A₀L₀ = A L = constante &nbsp;&nbsp;⟹&nbsp;&nbsp; A₀ / A = L / L₀</div>
+      <div class="eqn box">\( V = A_0 L_0 = A\,L = \text{cte} \;\Rightarrow\; \dfrac{A_0}{A} = \dfrac{L}{L_0} \)</div>
 
       <h4>Cómo se pasa de unas magnitudes a otras</h4>
       <div class="der">
-        <div class="eqn"><span class="s">deformación:</span> ε = ln(L/L₀) = ln( (L₀+ΔL)/L₀ ) = ln(1 + ΔL/L₀) = <b>ln(1 + e)</b></div>
-        <div class="eqn"><span class="s">tensión:</span> σ = F/A = (F/A₀)·(A₀/A) = S·(L/L₀) = <b>S (1 + e)</b></div>
+        <div class="eqn"><span class="s">deformación:</span> \( \varepsilon = \ln\frac{L}{L_0} = \ln\frac{L_0+\Delta L}{L_0} = \ln\!\Big(1 + \tfrac{\Delta L}{L_0}\Big) = \boldsymbol{\ln(1 + e)} \)</div>
+        <div class="eqn"><span class="s">tensión:</span> \( \sigma = \frac{F}{A} = \frac{F}{A_0}\cdot\frac{A_0}{A} = S\cdot\frac{L}{L_0} = \boldsymbol{S(1 + e)} \)</div>
       </div>
-      <div class="key"><b>Conversión:</b> &nbsp; ε = ln(1 + e) &nbsp;&nbsp;·&nbsp;&nbsp; σ = S(1 + e). &nbsp;
-        Como (1+e) &gt; 1, la curva verdadera queda siempre <b>por encima</b> de la ingenieril.</div>
+      <div class="key"><b>Conversión:</b> &nbsp; \( \varepsilon = \ln(1 + e) \) &nbsp;·&nbsp; \( \sigma = S(1 + e) \). &nbsp;
+        Como \((1+e) > 1\), la curva verdadera queda siempre <b>por encima</b> de la ingenieril.</div>
 
       <p><b>Validez.</b> Estas conversiones suponen deformación <b>uniforme</b> en toda la probeta,
       lo que solo se cumple <b>hasta la estricción</b>. A partir de ahí la deformación se localiza
@@ -195,22 +203,22 @@
 
       <h4>Deducción</h4>
       <div class="der">
-        <div class="eqn"><span class="s">1)</span> dF = d(σ A) = A·dσ + σ·dA = 0 &nbsp;⟹&nbsp; dσ/σ = − dA/A</div>
-        <div class="eqn"><span class="s">2)</span> incompresibilidad: A L = cte ⟹ d(AL)=0 ⟹ dA/A + dL/L = 0 ⟹ − dA/A = dL/L = dε</div>
-        <div class="eqn"><span class="s">3)</span> sustituyendo (2) en (1): &nbsp; dσ/σ = dε</div>
+        <div class="eqn"><span class="s">1)</span> \( dF = d(\sigma A) = A\,d\sigma + \sigma\,dA = 0 \;\Rightarrow\; \dfrac{d\sigma}{\sigma} = -\dfrac{dA}{A} \)</div>
+        <div class="eqn"><span class="s">2)</span> incompresibilidad: \( A L = \text{cte} \Rightarrow d(AL)=0 \Rightarrow \dfrac{dA}{A} + \dfrac{dL}{L} = 0 \Rightarrow -\dfrac{dA}{A} = \dfrac{dL}{L} = d\varepsilon \)</div>
+        <div class="eqn"><span class="s">3)</span> sustituyendo (2) en (1): &nbsp; \( \dfrac{d\sigma}{\sigma} = d\varepsilon \)</div>
       </div>
-      <div class="key"><b>Criterio de Considère:</b> &nbsp; dσ/dε = σ &nbsp; (en el punto de estricción, la pendiente de la curva verdadera iguala a la propia tensión).</div>
+      <div class="key"><b>Criterio de Considère:</b> &nbsp; \( \dfrac{d\sigma}{d\varepsilon} = \sigma \) &nbsp; (en el punto de estricción, la pendiente de la curva verdadera iguala a la propia tensión).</div>
 
       <h4>Aplicado a la ley de Hollomon</h4>
-      <p>Con σ = K εⁿ se tiene dσ/dε = n K εⁿ⁻¹. Imponiendo el criterio dσ/dε = σ:</p>
-      <div class="eqn box">n K εⁿ⁻¹ = K εⁿ &nbsp;&nbsp;⟹&nbsp;&nbsp; n = ε &nbsp;&nbsp;⟹&nbsp;&nbsp; <b>ε<sub>estr</sub> = n</b></div>
+      <p>Con \(\sigma = K\varepsilon^{n}\) se tiene \(d\sigma/d\varepsilon = nK\varepsilon^{n-1}\). Imponiendo el criterio \(d\sigma/d\varepsilon = \sigma\):</p>
+      <div class="eqn box">\( nK\varepsilon^{n-1} = K\varepsilon^{n} \;\Rightarrow\; n = \varepsilon \;\Rightarrow\; \boldsymbol{\varepsilon_{\text{estr}} = n} \)</div>
       <p>Es decir, la <b>deformación uniforme</b> (la máxima antes de la estricción) coincide con el
       exponente de endurecimiento n: un material que endurece más (n mayor) estira más antes de
       formar cuello.</p>
 
       <h4>Construcción geométrica</h4>
       <p>El criterio dσ/dε = σ equivale a decir que la <b>subtangente</b> de la curva vale 1:</p>
-      <div class="eqn box">subtangente = σ / (dσ/dε) = 1</div>
+      <div class="eqn box">\( \text{subtangente} = \dfrac{\sigma}{\,d\sigma/d\varepsilon\,} = 1 \)</div>
       <p>Por eso, la recta tangente a σ(ε) en el punto de estricción corta el eje σ = 0 en
       ε = ε<sub>estr</sub> − 1 = n − 1 (es la línea gris discontinua del panel izquierdo). En la
       variante clásica sobre <i>tensión verdadera frente a deformación ingenieril</i>, la tangente
@@ -275,16 +283,16 @@
       deformación de fluencia ε_y = Y/E y la deformación plástica ε_p ≈ ε − ε_y, las cinco leyes son:</p>
 
       <h4>1 · Elástico – perfectamente plástico</h4>
-      <div class="eqn box">σ = E ε &nbsp;(ε ≤ ε_y) &nbsp;&nbsp;|&nbsp;&nbsp; σ = Y &nbsp;(ε &gt; ε_y)</div>
+      <div class="eqn box">\( \sigma = E\varepsilon \ \ (\varepsilon \le \varepsilon_y) \qquad|\qquad \sigma = Y \ \ (\varepsilon > \varepsilon_y) \)</div>
       <p>No endurece: una vez alcanzado Y, la tensión se mantiene constante. Idealización más simple.</p>
 
       <h4>2 · Elástico – lineal con endurecimiento</h4>
-      <div class="eqn box">σ = Y + H (ε − ε_y) &nbsp;&nbsp;(ε &gt; ε_y)</div>
+      <div class="eqn box">\( \sigma = Y + H(\varepsilon - \varepsilon_y) \qquad (\varepsilon > \varepsilon_y) \)</div>
       <p>H es el <b>módulo de endurecimiento</b> (pendiente de la recta plástica). El módulo
       tangente total cumple 1/E_t = 1/E + 1/H.</p>
 
       <h4>3 · Hollomon (ley potencial)</h4>
-      <div class="eqn box">σ = K<sub>H</sub> ε_p<sup>n</sup> &nbsp;&nbsp;(0 ≤ n ≤ 1)</div>
+      <div class="eqn box">\( \sigma = K_H\,\varepsilon_p^{\,n} \qquad (0 \le n \le 1) \)</div>
       <ul>
         <li><b>K<sub>H</sub></b> = coeficiente de resistencia; <b>n</b> = exponente de endurecimiento por deformación (n = 0 ⟹ perfectamente plástico).</li>
         <li>Ambos se obtienen <b>ajustando la zona plástica</b>: en ejes log σ – log ε_p la ley es una recta de pendiente n y ordenada en el origen log K<sub>H</sub>. De ahí K<sub>H</sub> = σ(ε_p = 1).</li>
@@ -292,12 +300,12 @@
       </ul>
 
       <h4>4 · Ludwik</h4>
-      <div class="eqn box">σ = σ<sub>Y</sub> + K<sub>L</sub> ε_p<sup>n<sub>L</sub></sup></div>
+      <div class="eqn box">\( \sigma = \sigma_Y + K_L\,\varepsilon_p^{\,n_L} \)</div>
       <p>Es Hollomon <b>más</b> un término aditivo de límite elástico, de modo que la rama plástica
       <b>arranca en σ<sub>Y</sub></b> (σ = σ_Y cuando ε_p = 0). Corrige la principal carencia de Hollomon.</p>
 
       <h4>5 · Ramberg–Osgood</h4>
-      <div class="eqn box">ε = σ/E + α (σ/Y)<sup>m</sup> &nbsp;&nbsp;(α = 0,002)</div>
+      <div class="eqn box">\( \varepsilon = \dfrac{\sigma}{E} + \alpha\Big(\dfrac{\sigma}{Y}\Big)^{m} , \qquad \alpha = 0{,}002 \)</div>
       <ul>
         <li>Representa la transición elástico-plástica de forma <b>continua</b>, sin un codo abrupto. El primer término es la parte elástica; el segundo, la plástica.</li>
         <li>Aquí Y es el <b>límite elástico convencional del 0,2 %</b>, así que la curva alcanza σ = Y en ε = ε_y + α = ε_y + 0,002 (rombo ◆), <b>no</b> en ε_y (círculo ●). Por eso R-O va desplazada a la derecha.</li>
