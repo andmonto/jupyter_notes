@@ -10,8 +10,20 @@
     chtml: { scale: 1.02 },
     options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
   };
+  // Se carga MathJax inyectando el script desde aquí (inline) para que también
+  // funcione en visores que no ejecutan <script src> externos (p. ej. htmlpreview).
+  (function(){
+    var s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.min.js';
+    s.async = true;
+    s.onerror = function(){
+      var s2 = document.createElement('script');
+      s2.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js';
+      s2.async = true; document.head.appendChild(s2);
+    };
+    document.head.appendChild(s);
+  })();
 </script>
-<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
 <style>
   :root{
     --accent:#2E6FB0; --tint:#E7F0F9; --text:#1A2430; --muted:#5B6675; --line:#DCE3EA;
