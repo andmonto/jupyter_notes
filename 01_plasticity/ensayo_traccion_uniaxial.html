@@ -50,6 +50,30 @@
   .note{margin-top:26px;font-size:12.5px;color:var(--muted);line-height:1.6;
         border-top:1px solid var(--line);padding-top:12px;max-width:940px}
   .note b{color:var(--text)}
+  /* ---- desplegables de teoría ---- */
+  details.theory{margin:14px 0 2px;border:1px solid var(--line);border-radius:8px;
+                 background:#FBFCFD;max-width:920px}
+  details.theory>summary{cursor:pointer;padding:11px 16px;font-weight:600;font-size:13.5px;
+        color:var(--accent);list-style:none;display:flex;align-items:center;gap:9px;user-select:none}
+  details.theory>summary::-webkit-details-marker{display:none}
+  details.theory>summary::before{content:"▸";color:var(--accent);transition:transform .15s;
+        display:inline-block;font-size:12px}
+  details.theory[open]>summary::before{transform:rotate(90deg)}
+  details.theory[open]>summary{border-bottom:1px solid var(--line)}
+  .theory .body{padding:6px 20px 18px;font-size:13.5px;line-height:1.65;color:#28323d}
+  .theory .body p{margin:9px 0}
+  .theory h4{margin:16px 0 4px;font-size:13.5px;color:#1c2b3a}
+  .theory h4:first-child{margin-top:6px}
+  .eqn{font-family:Cambria,Georgia,"Times New Roman",serif;font-size:16px;text-align:center;
+       margin:11px 0;color:#16324a}
+  .eqn.box{background:#fff;border:1px solid var(--line);border-radius:6px;padding:9px 10px}
+  .der{border-left:3px solid var(--tint);padding:2px 0 2px 14px;margin:10px 0}
+  .der .eqn{text-align:left;margin:7px 0}
+  .der .s{color:var(--muted);font-family:"Segoe UI",Arial;font-size:12px;margin-right:6px}
+  .theory .key{background:#FFF6E0;border:1px solid #F0C674;border-radius:6px;
+               padding:8px 12px;margin:11px 0;font-size:13px}
+  .theory ul{margin:8px 0;padding-left:20px}
+  .theory li{margin:5px 0}
 </style>
 </head>
 <body>
@@ -97,6 +121,42 @@
       <canvas id="cv1" width="660" height="430"></canvas>
     </div>
   </div>
+
+  <details class="theory">
+    <summary>Ver teoría: tensión y deformación ingenieriles ↔ verdaderas</summary>
+    <div class="body">
+      <h4>Magnitudes ingenieriles</h4>
+      <p>Se refieren a la geometría <b>inicial</b> de la probeta (sección A₀, longitud L₀):</p>
+      <div class="eqn box">S = F / A₀ &nbsp;&nbsp;(tensión ingenieril) &nbsp;&nbsp;·&nbsp;&nbsp; e = ΔL / L₀ &nbsp;&nbsp;(deformación ingenieril)</div>
+
+      <h4>Magnitudes verdaderas</h4>
+      <p>La <b>tensión verdadera</b> se refiere a la sección <b>instantánea</b> A (que va disminuyendo):</p>
+      <div class="eqn box">σ = F / A</div>
+      <p>La deformación ingenieril <b>no es aditiva</b> (si el proceso ocurre en dos etapas, e₁+e₂ ≠ e total). Por eso se define la <b>deformación verdadera</b> de forma incremental, sumando los alargamientos relativos sobre la longitud de cada instante:</p>
+      <div class="eqn box">dε = dL / L &nbsp;&nbsp;⟹&nbsp;&nbsp; ε = ∫<sub>L₀</sub><sup>L</sup> dL/L = ln(L / L₀)</div>
+      <p>Así definida, ε <b>sí</b> es aditiva: ln(L₂/L₀) = ln(L₁/L₀) + ln(L₂/L₁).</p>
+
+      <h4>Hipótesis clave: incompresibilidad plástica</h4>
+      <p>En deformación plástica el volumen se conserva, de modo que:</p>
+      <div class="eqn box">V = A₀L₀ = A L = constante &nbsp;&nbsp;⟹&nbsp;&nbsp; A₀ / A = L / L₀</div>
+
+      <h4>Cómo se pasa de unas magnitudes a otras</h4>
+      <div class="der">
+        <div class="eqn"><span class="s">deformación:</span> ε = ln(L/L₀) = ln( (L₀+ΔL)/L₀ ) = ln(1 + ΔL/L₀) = <b>ln(1 + e)</b></div>
+        <div class="eqn"><span class="s">tensión:</span> σ = F/A = (F/A₀)·(A₀/A) = S·(L/L₀) = <b>S (1 + e)</b></div>
+      </div>
+      <div class="key"><b>Conversión:</b> &nbsp; ε = ln(1 + e) &nbsp;&nbsp;·&nbsp;&nbsp; σ = S(1 + e). &nbsp;
+        Como (1+e) &gt; 1, la curva verdadera queda siempre <b>por encima</b> de la ingenieril.</div>
+
+      <p><b>Validez.</b> Estas conversiones suponen deformación <b>uniforme</b> en toda la probeta,
+      lo que solo se cumple <b>hasta la estricción</b>. A partir de ahí la deformación se localiza
+      en el cuello y A, L dejan de ser uniformes (por eso el tramo ingenieril se dibuja discontinuo).</p>
+
+      <p><b>Límite elástico Y y ε_y.</b> En el tramo elástico rige Hooke (σ = Eε); la fluencia
+      empieza en la <b>deformación de fluencia</b> ε_y = Y/E. El <b>límite elástico convencional</b>
+      S_Y se define con un desfase de deformación plástica del 0,2 % (x = 0,002).</p>
+    </div>
+  </details>
 </section>
 
 <!-- ============================ §1.3 ============================ -->
@@ -122,6 +182,44 @@
       <canvas id="cv2b" width="360" height="360"></canvas>
     </div>
   </div>
+
+  <details class="theory">
+    <summary>Ver teoría: cómo se obtiene el criterio de Considère</summary>
+    <div class="body">
+      <h4>El problema: máximo de carga</h4>
+      <p>La fuerza que soporta la probeta es F = σ·A. Durante el ensayo compiten dos efectos:
+      la tensión verdadera <b>crece</b> (endurecimiento) mientras la sección <b>disminuye</b>
+      (conservación de volumen). Al principio gana el endurecimiento y F sube; llega un momento
+      en que gana la reducción de área y F baja. En ese <b>máximo de carga</b> empieza la
+      <b>estricción</b>. Matemáticamente, el máximo cumple dF = 0.</p>
+
+      <h4>Deducción</h4>
+      <div class="der">
+        <div class="eqn"><span class="s">1)</span> dF = d(σ A) = A·dσ + σ·dA = 0 &nbsp;⟹&nbsp; dσ/σ = − dA/A</div>
+        <div class="eqn"><span class="s">2)</span> incompresibilidad: A L = cte ⟹ d(AL)=0 ⟹ dA/A + dL/L = 0 ⟹ − dA/A = dL/L = dε</div>
+        <div class="eqn"><span class="s">3)</span> sustituyendo (2) en (1): &nbsp; dσ/σ = dε</div>
+      </div>
+      <div class="key"><b>Criterio de Considère:</b> &nbsp; dσ/dε = σ &nbsp; (en el punto de estricción, la pendiente de la curva verdadera iguala a la propia tensión).</div>
+
+      <h4>Aplicado a la ley de Hollomon</h4>
+      <p>Con σ = K εⁿ se tiene dσ/dε = n K εⁿ⁻¹. Imponiendo el criterio dσ/dε = σ:</p>
+      <div class="eqn box">n K εⁿ⁻¹ = K εⁿ &nbsp;&nbsp;⟹&nbsp;&nbsp; n = ε &nbsp;&nbsp;⟹&nbsp;&nbsp; <b>ε<sub>estr</sub> = n</b></div>
+      <p>Es decir, la <b>deformación uniforme</b> (la máxima antes de la estricción) coincide con el
+      exponente de endurecimiento n: un material que endurece más (n mayor) estira más antes de
+      formar cuello.</p>
+
+      <h4>Construcción geométrica</h4>
+      <p>El criterio dσ/dε = σ equivale a decir que la <b>subtangente</b> de la curva vale 1:</p>
+      <div class="eqn box">subtangente = σ / (dσ/dε) = 1</div>
+      <p>Por eso, la recta tangente a σ(ε) en el punto de estricción corta el eje σ = 0 en
+      ε = ε<sub>estr</sub> − 1 = n − 1 (es la línea gris discontinua del panel izquierdo). En la
+      variante clásica sobre <i>tensión verdadera frente a deformación ingenieril</i>, la tangente
+      se traza desde e = −1.</p>
+
+      <div class="key"><b>Idea final:</b> la estricción es un fenómeno <b>estructural</b>
+      (depende de la geometría <i>y</i> del material), no una propiedad pura del material.</div>
+    </div>
+  </details>
 </section>
 
 <!-- ============================ §1.4 ============================ -->
@@ -169,6 +267,48 @@
       <canvas id="cv4" width="660" height="440"></canvas>
     </div>
   </div>
+
+  <details class="theory">
+    <summary>Ver teoría: ecuaciones de las leyes de endurecimiento</summary>
+    <div class="body">
+      <p>Se busca representar analíticamente la <b>parte plástica</b> de la curva σ–ε. Con la
+      deformación de fluencia ε_y = Y/E y la deformación plástica ε_p ≈ ε − ε_y, las cinco leyes son:</p>
+
+      <h4>1 · Elástico – perfectamente plástico</h4>
+      <div class="eqn box">σ = E ε &nbsp;(ε ≤ ε_y) &nbsp;&nbsp;|&nbsp;&nbsp; σ = Y &nbsp;(ε &gt; ε_y)</div>
+      <p>No endurece: una vez alcanzado Y, la tensión se mantiene constante. Idealización más simple.</p>
+
+      <h4>2 · Elástico – lineal con endurecimiento</h4>
+      <div class="eqn box">σ = Y + H (ε − ε_y) &nbsp;&nbsp;(ε &gt; ε_y)</div>
+      <p>H es el <b>módulo de endurecimiento</b> (pendiente de la recta plástica). El módulo
+      tangente total cumple 1/E_t = 1/E + 1/H.</p>
+
+      <h4>3 · Hollomon (ley potencial)</h4>
+      <div class="eqn box">σ = K<sub>H</sub> ε_p<sup>n</sup> &nbsp;&nbsp;(0 ≤ n ≤ 1)</div>
+      <ul>
+        <li><b>K<sub>H</sub></b> = coeficiente de resistencia; <b>n</b> = exponente de endurecimiento por deformación (n = 0 ⟹ perfectamente plástico).</li>
+        <li>Ambos se obtienen <b>ajustando la zona plástica</b>: en ejes log σ – log ε_p la ley es una recta de pendiente n y ordenada en el origen log K<sub>H</sub>. De ahí K<sub>H</sub> = σ(ε_p = 1).</li>
+        <li><b>No tiene término de límite elástico</b>: σ → 0 cuando ε_p → 0. Por eso se dibuja solo desde la fluencia y no empalma con la recta elástica.</li>
+      </ul>
+
+      <h4>4 · Ludwik</h4>
+      <div class="eqn box">σ = σ<sub>Y</sub> + K<sub>L</sub> ε_p<sup>n<sub>L</sub></sup></div>
+      <p>Es Hollomon <b>más</b> un término aditivo de límite elástico, de modo que la rama plástica
+      <b>arranca en σ<sub>Y</sub></b> (σ = σ_Y cuando ε_p = 0). Corrige la principal carencia de Hollomon.</p>
+
+      <h4>5 · Ramberg–Osgood</h4>
+      <div class="eqn box">ε = σ/E + α (σ/Y)<sup>m</sup> &nbsp;&nbsp;(α = 0,002)</div>
+      <ul>
+        <li>Representa la transición elástico-plástica de forma <b>continua</b>, sin un codo abrupto. El primer término es la parte elástica; el segundo, la plástica.</li>
+        <li>Aquí Y es el <b>límite elástico convencional del 0,2 %</b>, así que la curva alcanza σ = Y en ε = ε_y + α = ε_y + 0,002 (rombo ◆), <b>no</b> en ε_y (círculo ●). Por eso R-O va desplazada a la derecha.</li>
+        <li>Subir el exponente m <b>afila</b> el codo (se acerca al límite elástico neto), pero nunca lo alcanza: el término plástico α(σ/Y)<sup>m</sup> no se anula en σ = Y.</li>
+      </ul>
+
+      <div class="key"><b>Conexión con Considère:</b> como ε_estr = n para Hollomon, el exponente de
+      endurecimiento no solo fija la forma de la curva plástica, sino también <b>cuánto estira el
+      material antes de la estricción</b>.</div>
+    </div>
+  </details>
 </section>
 
 <div class="note">
