@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ensayo de tracción uniaxial — simulación interactiva</title>
+<style>
+  :root{
+    --accent:#2E6FB0; --tint:#E7F0F9; --text:#1A2430; --muted:#5B6675; --line:#DCE3EA;
+    --true:#C0392B; --eng:#2E6FB0;
+    --c1:#2E6FB0; --c2:#E08A00; --c3:#2CA02C; --c4:#C0392B; --c5:#8E5AB6;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;padding:22px 26px;font-family:"Segoe UI",Calibri,Arial,sans-serif;
+       color:var(--text);background:#fff;max-width:1160px}
+  h1{font-size:25px;color:#1c2b3a;margin:0 0 3px}
+  .sub{color:var(--muted);font-size:14px;margin-bottom:16px}
+  .sub b{color:var(--text)}
+  .eqbar{display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+  .eq{flex:1;min-width:250px;background:var(--tint);border:1px solid var(--accent);
+      border-radius:7px;padding:9px 14px;font-family:Cambria,Georgia,serif;font-size:16px}
+  .eq b{display:block;font-family:"Segoe UI",Arial,sans-serif;font-size:12.5px;
+        color:var(--accent);margin-bottom:3px}
+  .eq small{display:block;font-family:"Segoe UI",Arial,sans-serif;font-size:11.5px;
+            color:var(--muted);margin-top:4px;line-height:1.35}
+  section{border-top:1px solid var(--line);padding-top:16px;margin-top:24px}
+  h2{font-size:18px;color:#1c2b3a;margin:0 0 4px}
+  .lead{font-size:13.5px;color:#33404d;line-height:1.55;max-width:900px;margin:0 0 12px}
+  .lead .f{font-family:Cambria,Georgia,serif;font-size:15px}
+  .wrap{display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap}
+  .panel{width:238px;flex-shrink:0}
+  .grp{font-size:11.5px;color:var(--muted);font-weight:700;margin:2px 0 8px;
+       text-transform:uppercase;letter-spacing:.03em}
+  .ctrl{margin-bottom:11px}
+  .ctrl label{display:flex;justify-content:space-between;font-size:13px;font-weight:600;margin-bottom:3px}
+  .ctrl .val{color:var(--accent);font-family:Cambria,Georgia,serif}
+  input[type=range]{width:100%;accent-color:var(--accent);height:17px}
+  canvas{border:1px solid var(--line);border-radius:7px;background:#fff;max-width:100%}
+  .legend{display:flex;gap:16px;font-size:12.5px;margin:0 0 8px;flex-wrap:wrap}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .sw{width:22px;border-top-width:3px;border-top-style:solid;display:inline-block}
+  .figs{display:flex;gap:18px;flex-wrap:wrap}
+  .status{margin-top:12px;padding:10px 12px;border-radius:7px;font-size:12.5px;line-height:1.5;
+          background:#F7F9FA;border:1px solid var(--line)}
+  .status b{color:var(--accent)}
+  button{margin-top:12px;width:100%;padding:8px 10px;font-size:12.5px;font-weight:600;
+         font-family:inherit;border-radius:6px;cursor:pointer;border:1px solid var(--accent);
+         background:#fff;color:var(--accent)}
+  button:hover{background:var(--tint)}
+  .note{margin-top:26px;font-size:12.5px;color:var(--muted);line-height:1.6;
+        border-top:1px solid var(--line);padding-top:12px;max-width:940px}
+  .note b{color:var(--text)}
+</style>
+</head>
+<body>
+
+<h1>Comportamiento bajo carga uniaxial — El ensayo de tracción</h1>
+<div class="sub">Teoría de la Plasticidad — <b>Bloque I, §1</b>. Todo se calcula en el navegador (JavaScript); mueve los deslizadores y las curvas se actualizan en tiempo real. El encuadre de cada gráfica está <b>fijo</b>: al variar los parámetros la curva se mueve dentro del cuadro.</div>
+
+<div class="eqbar">
+  <div class="eq"><b>INGENIERIL</b>
+    S = F/A₀ ,&nbsp; e = ΔL/L₀
+    <small>Referidas a la sección/longitud <i>iniciales</i>.</small></div>
+  <div class="eq"><b>VERDADERA</b>
+    σ = F/A = S(1+e) ,&nbsp; ε = ln(1+e)
+    <small>Referidas a la sección <i>instantánea</i>. Válidas hasta la estricción (deformación uniforme).</small></div>
+  <div class="eq"><b>INESTABILIDAD (Considère)</b>
+    dσ/dε = σ &nbsp;⟹&nbsp; ε<sub>estr</sub> = n
+    <small>Para Hollomon σ = Kεⁿ, la deformación uniforme coincide con el exponente n.</small></div>
+</div>
+
+<!-- ============================ §1.1–1.2 ============================ -->
+<section>
+  <h2>§1.1–1.2 · Curva ingenieril vs. verdadera</h2>
+  <p class="lead">Se modela el material como elástico (pendiente <span class="f">E</span>) seguido de
+    endurecimiento potencial. La curva <span class="f">verdadera</span> siempre queda por encima de la
+    <span class="f">ingenieril</span> porque <span class="f">σ = S(1+e)</span>. La ingenieril presenta un
+    <b>máximo (S<sub>máx</sub>, resistencia a tracción)</b> justo en la estricción; a partir de ahí la
+    deformación deja de ser uniforme (tramo discontinuo).</p>
+  <div class="wrap">
+    <div class="panel">
+      <div class="grp">Material</div>
+      <div class="ctrl"><label>E <span class="val" id="v_E1">200 GPa</span></label>
+        <input type="range" id="E1" min="50" max="400" step="10" value="200"></div>
+      <div class="ctrl"><label>Límite elástico Y <span class="val" id="v_Y1">250 MPa</span></label>
+        <input type="range" id="Y1" min="50" max="600" step="10" value="250"></div>
+      <div class="ctrl"><label>Exp. endurecimiento n <span class="val" id="v_n1">0.15</span></label>
+        <input type="range" id="n1" min="0.02" max="0.5" step="0.01" value="0.15"></div>
+      <button data-reset="1">Restablecer</button>
+      <div class="status" id="st1"></div>
+    </div>
+    <div>
+      <div class="legend">
+        <span><i class="sw" style="border-color:var(--true)"></i>verdadera σ(ε)</span>
+        <span><i class="sw" style="border-color:var(--eng)"></i>ingenieril S(e)</span>
+      </div>
+      <canvas id="cv1" width="660" height="430"></canvas>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ §1.3 ============================ -->
+<section>
+  <h2>§1.3 · Inestabilidad en tracción y estricción (Considère)</h2>
+  <p class="lead">La carga es <span class="f">F = σA</span>: σ crece y A decrece, así que aparece un
+    <b>máximo</b>. Imponiendo <span class="f">dF = 0</span> se llega a <span class="f">dσ/dε = σ</span>;
+    para Hollomon eso da <span class="f">ε<sub>estr</sub> = n</span>. <b>Izquierda:</b> construcción de la
+    tangente (subtangente = 1, corta σ=0 en ε = n−1). <b>Derecha:</b> la carga (tensión ingenieril)
+    alcanza su máximo justo ahí.</p>
+  <div class="wrap">
+    <div class="panel">
+      <div class="grp">Ley de Hollomon σ = Kεⁿ</div>
+      <div class="ctrl"><label>Resistencia K <span class="val" id="v_K2">520 MPa</span></label>
+        <input type="range" id="K2" min="200" max="1200" step="20" value="520"></div>
+      <div class="ctrl"><label>Exp. endurecimiento n <span class="val" id="v_n2">0.15</span></label>
+        <input type="range" id="n2" min="0.02" max="0.5" step="0.01" value="0.15"></div>
+      <button data-reset="2">Restablecer</button>
+      <div class="status" id="st2"></div>
+    </div>
+    <div class="figs">
+      <canvas id="cv2a" width="360" height="360"></canvas>
+      <canvas id="cv2b" width="360" height="360"></canvas>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ §1.4 ============================ -->
+<section>
+  <h2>§1.4 · Leyes empíricas tensión–deformación</h2>
+  <p class="lead">Se superponen cinco modelos para el mismo <span class="f">E</span> y <span class="f">Y</span>.
+    <b>Hollomon</b> (σ = K<sub>H</sub>εₚⁿ) no tiene término de límite elástico: se dibuja solo desde la
+    fluencia y <i>no</i> empalma con la recta elástica — eso es justo lo que corrige <b>Ludwik</b>
+    (σ = σ<sub>Y</sub> + K<sub>L</sub>εₚ<sup>n<sub>L</sub></sup>). <b>Ramberg–Osgood</b> usa el límite
+    elástico convencional del 0,2 %, por lo que alcanza Y en ε<sub>y</sub>+0,002 (rombo ◆), no en
+    ε<sub>y</sub> (círculo ●).</p>
+  <div class="wrap">
+    <div class="panel">
+      <div class="grp">Material</div>
+      <div class="ctrl"><label>E <span class="val" id="v_E4">200 GPa</span></label>
+        <input type="range" id="E4" min="50" max="400" step="10" value="200"></div>
+      <div class="ctrl"><label>Límite elástico Y <span class="val" id="v_Y4">250 MPa</span></label>
+        <input type="range" id="Y4" min="50" max="600" step="10" value="250"></div>
+      <div class="grp" style="margin-top:10px">Endurecimiento lineal</div>
+      <div class="ctrl"><label>H <span class="val" id="v_H4">1500 MPa</span></label>
+        <input type="range" id="H4" min="0" max="8000" step="100" value="1500"></div>
+      <div class="grp" style="margin-top:10px">Hollomon</div>
+      <div class="ctrl"><label>K<sub>H</sub> <span class="val" id="v_KH">650 MPa</span></label>
+        <input type="range" id="KH" min="200" max="1500" step="25" value="650"></div>
+      <div class="ctrl"><label>n <span class="val" id="v_nH">0.15</span></label>
+        <input type="range" id="nH" min="0.02" max="0.5" step="0.01" value="0.15"></div>
+      <div class="grp" style="margin-top:10px">Ludwik</div>
+      <div class="ctrl"><label>K<sub>L</sub> <span class="val" id="v_KL">500 MPa</span></label>
+        <input type="range" id="KL" min="100" max="2000" step="50" value="500"></div>
+      <div class="ctrl"><label>n<sub>L</sub> <span class="val" id="v_nL">0.15</span></label>
+        <input type="range" id="nL" min="0.02" max="0.5" step="0.01" value="0.15"></div>
+      <div class="grp" style="margin-top:10px">Ramberg–Osgood</div>
+      <div class="ctrl"><label>exponente m <span class="val" id="v_m4">8</span></label>
+        <input type="range" id="m4" min="2" max="25" step="1" value="8"></div>
+      <button data-reset="4">Restablecer</button>
+    </div>
+    <div>
+      <div class="legend">
+        <span><i class="sw" style="border-color:var(--c1)"></i>elást.–perf. plástico</span>
+        <span><i class="sw" style="border-color:var(--c2)"></i>elást.–lineal (H)</span>
+        <span><i class="sw" style="border-color:var(--c3)"></i>Hollomon</span>
+        <span><i class="sw" style="border-color:var(--c4)"></i>Ludwik</span>
+        <span><i class="sw" style="border-color:var(--c5);border-top-style:dashed"></i>Ramberg–Osgood</span>
+      </div>
+      <canvas id="cv4" width="660" height="440"></canvas>
+    </div>
+  </div>
+</section>
+
+<div class="note">
+  <b>Resumen:</b> σ = S(1+e), ε = ln(1+e) (deformación uniforme, incompresibilidad plástica).
+  El límite elástico convencional S<sub>Y</sub> se define con el desfase del 0,2 %. La inestabilidad
+  (Considère) ocurre en dσ/dε = σ, con ε<sub>estr</sub> = n para Hollomon y S<sub>máx</sub> = resistencia
+  a tracción (UTS). Esta curva uniaxial es la que calibra los criterios multiaxiales (Tresca, Von Mises)
+  y las leyes de endurecimiento de las secciones siguientes.
+</div>
+
+<script>
+"use strict";
+const OFFSET = 0.002;
+const P = {
+  E1:200, Y1:250, n1:0.15,
+  K2:520, n2:0.15,
+  E4:200, Y4:250, H4:1500, KH:650, nH:0.15, KL:500, nL:0.15, m4:8
+};
+
+// ---------- utilidades de dibujo ----------
+function mapper(cv, xmin, xmax, ymin, ymax, ml, mb){
+  ml = ml||62; mb = mb||40; const mr=16, mt=14, w=cv.width, h=cv.height;
+  return {
+    px: v => ml + (v-xmin)/(xmax-xmin)*(w-ml-mr),
+    py: v => (h-mb) - (v-ymin)/(ymax-ymin)*(h-mt-mb),
+    ml, mr, mt, mb, w, h, xmin, xmax, ymin, ymax
+  };
+}
+function axes(g, M, xticks, yticks, xlab, ylab, xfmt, yfmt){
+  g.clearRect(0,0,M.w,M.h);
+  g.strokeStyle='#EEF2F5'; g.lineWidth=1;
+  yticks.forEach(v=>{ const y=M.py(v); g.beginPath(); g.moveTo(M.ml,y); g.lineTo(M.w-M.mr,y); g.stroke(); });
+  xticks.forEach(v=>{ const x=M.px(v); g.beginPath(); g.moveTo(x,M.mt); g.lineTo(x,M.h-M.mb); g.stroke(); });
+  // ejes
+  g.strokeStyle='#9AA6B2'; g.lineWidth=1.1;
+  const y0 = (M.ymin<=0 && M.ymax>=0) ? M.py(0) : M.h-M.mb;
+  const x0 = (M.xmin<=0 && M.xmax>=0) ? M.px(0) : M.ml;
+  g.beginPath(); g.moveTo(M.ml,y0); g.lineTo(M.w-M.mr,y0);
+  g.moveTo(x0,M.mt); g.lineTo(x0,M.h-M.mb); g.stroke();
+  // ticks + etiquetas
+  g.fillStyle='#8892A0'; g.font='11px Segoe UI, Arial';
+  g.textAlign='center';
+  xticks.forEach(v=>{ g.fillText(xfmt(v), M.px(v), M.h-M.mb+15); });
+  g.textAlign='right';
+  yticks.forEach(v=>{ g.fillText(yfmt(v), M.ml-7, M.py(v)+4); });
+  // rótulos de eje
+  g.fillStyle='#33404d'; g.font='bold 12.5px Cambria, Georgia, serif';
+  g.textAlign='center'; g.fillText(xlab, M.ml+(M.w-M.ml-M.mr)/2, M.h-6);
+  g.save(); g.translate(15, M.mt+(M.h-M.mt-M.mb)/2); g.rotate(-Math.PI/2);
+  g.fillText(ylab, 0, 0); g.restore();
+}
+function line(g, M, xs, ys, color, lw, dash){
+  g.strokeStyle=color; g.lineWidth=lw; g.setLineDash(dash||[]); g.beginPath();
+  for(let i=0;i<xs.length;i++){ const x=M.px(xs[i]), y=M.py(ys[i]);
+    i?g.lineTo(x,y):g.moveTo(x,y); } g.stroke(); g.setLineDash([]);
+}
+function dot(g, M, x, y, color, r){
+  g.beginPath(); g.arc(M.px(x), M.py(y), r||5, 0, 7); g.fillStyle=color; g.fill();
+  g.lineWidth=1; g.strokeStyle='#1A2430'; g.stroke();
+}
+function marker(g, M, x, y, color, sq){
+  const px=M.px(x), py=M.py(y), s=6;
+  g.fillStyle=color; g.strokeStyle='#1A2430'; g.lineWidth=1;
+  if(sq){ g.fillRect(px-s/2,py-s/2,s,s); g.strokeRect(px-s/2,py-s/2,s,s); }
+  else { g.beginPath(); for(let k=0;k<4;k++){ const a=k/4*2*Math.PI+Math.PI/4;
+    const dx=px+s*0.8*Math.cos(a), dy=py+s*0.8*Math.sin(a); k?g.lineTo(dx,dy):g.moveTo(dx,dy);}
+    g.closePath(); g.fill(); g.stroke(); }
+}
+
+// ---------- física ----------
+function flowTrue(E, Y, n, eps){ const ey=Y/E, K=Y/Math.pow(ey,n);
+  return eps<=ey ? E*eps : K*Math.pow(eps,n); }
+
+// ---------- §1.1–1.2 ----------
+const cv1=document.getElementById('cv1'), g1=cv1.getContext('2d');
+const M1=mapper(cv1, 0, 0.45, 0, 664.9);
+function draw1(){
+  const E=P.E1*1e3, Y=P.Y1, n=P.n1, ey=Y/E, K=Y/Math.pow(ey,n);
+  const N=400, eps=[], sig=[], e=[], S=[];
+  for(let i=0;i<=N;i++){ const x=1e-6+i/N*0.45; eps.push(x);
+    const s=flowTrue(E,Y,n,x); sig.push(s); e.push(Math.expm1(x)); S.push(s*Math.exp(-x)); }
+  const en=n, sn=K*Math.pow(n,n), Smax=sn*Math.exp(-n), een=Math.expm1(n);
+  axes(g1,M1,[0,0.1,0.2,0.3,0.4],[0,100,200,300,400,500,600],
+       'deformación  ε, e  (–)','tensión  σ, S  (MPa)', v=>v.toFixed(2), v=>v);
+  // verdadera
+  line(g1,M1,eps,sig,'#C0392B',2.4);
+  // ingenieril: uniforme (hasta estricción) + discontinua
+  const eU=[],SU=[],eP=[],SP=[];
+  for(let i=0;i<=N;i++){ if(e[i]<=een){eU.push(e[i]);SU.push(S[i]);} else {eP.push(e[i]);SP.push(S[i]);} }
+  line(g1,M1,eU,SU,'#2E6FB0',2.4);
+  line(g1,M1,eP,SP,'rgba(46,111,176,.45)',1.7,[6,4]);
+  // desfase 0,2 %
+  const ox=[],oy=[]; for(let i=0;i<=N;i++){ const o=E*(eps[i]-OFFSET); if(o>=0&&o<=Y*1.06){ox.push(eps[i]);oy.push(o);} }
+  line(g1,M1,ox,oy,'#9AA6B2',1,[2,3]);
+  // marcadores
+  dot(g1,M1,ey,Y,'#111',5);
+  g1.fillStyle='#33404d'; g1.font='12px Segoe UI, Arial'; g1.textAlign='left';
+  g1.fillText('S_Y = '+Y.toFixed(0), M1.px(ey)+8, M1.py(Y)+16);
+  marker(g1,M1,een,Smax,'#2E6FB0',true);
+  g1.fillStyle='#2E6FB0'; g1.fillText('S_máx = '+Smax.toFixed(0)+' (UTS)', M1.px(een)+9, M1.py(Smax)-6);
+  dot(g1,M1,en,sn,'#C0392B',5);
+  g1.strokeStyle='#C9CFD6'; g1.setLineDash([4,4]); g1.lineWidth=1;
+  g1.beginPath(); g1.moveTo(M1.px(en),M1.mt); g1.lineTo(M1.px(en),M1.h-M1.mb); g1.stroke(); g1.setLineDash([]);
+  g1.fillStyle='#5B6675'; g1.font='11px Segoe UI, Arial';
+  g1.fillText('estricción  ε = n = '+n.toFixed(2), M1.px(en)+6, M1.h-M1.mb-8);
+  document.getElementById('st1').innerHTML =
+    'Fluye en ε_y = <b>'+(ey).toFixed(4)+'</b>. Estricción (UTS) en ε = n = <b>'+n.toFixed(2)+
+    '</b>. S_máx = <b>'+Smax.toFixed(0)+'</b> MPa, σ_verdadera ahí = <b>'+sn.toFixed(0)+'</b> MPa.';
+}
+
+// ---------- §1.3 Considère ----------
+const cv2a=document.getElementById('cv2a'), g2a=cv2a.getContext('2d');
+const cv2b=document.getElementById('cv2b'), g2b=cv2b.getContext('2d');
+const M2a=mapper(cv2a,-0.9,0.5,0,515.5,54,38), M2b=mapper(cv2b,0,0.6487,0,404.1,54,38);
+function draw2(){
+  const K=P.K2, n=P.n2, N=400;
+  const eps=[],sig=[]; for(let i=0;i<=N;i++){ const x=1e-4+i/N*0.5; eps.push(x); sig.push(K*Math.pow(x,n)); }
+  const en=n, sn=K*Math.pow(n,n);
+  const e=[],S=[]; for(let i=0;i<=N;i++){ e.push(Math.expm1(eps[i])); S.push(sig[i]*Math.exp(-eps[i])); }
+  const Smax=sn*Math.exp(-n), een=Math.expm1(n);
+  // panel izquierdo
+  axes(g2a,M2a,[-0.8,-0.4,0,0.4],[0,100,200,300,400,500],
+       'deformación verdadera  ε','tensión verdadera  σ (MPa)', v=>v.toFixed(1), v=>v);
+  line(g2a,M2a,eps,sig,'#C0392B',2.4);
+  const tx=[en-1, Math.min(0.5,en+0.15)], ty=tx.map(x=>sn*(1+(x-en)));
+  line(g2a,M2a,tx,ty,'#5B6675',1.3,[6,5]);
+  dot(g2a,M2a,en,sn,'#C0392B',6); dot(g2a,M2a,en-1,0,'#5B6675',4);
+  g2a.strokeStyle='#C9CFD6'; g2a.setLineDash([4,4]); g2a.lineWidth=1;
+  g2a.beginPath(); g2a.moveTo(M2a.px(en),M2a.mt); g2a.lineTo(M2a.px(en),M2a.h-M2a.mb); g2a.stroke(); g2a.setLineDash([]);
+  g2a.fillStyle='#33404d'; g2a.font='11px Segoe UI, Arial'; g2a.textAlign='left';
+  g2a.fillText('subtangente = 1', M2a.px(en-0.55), M2a.py(sn*0.42));
+  g2a.fillText('ε_estr = n = '+n.toFixed(2), M2a.px(en)+5, M2a.mt+14);
+  // panel derecho
+  axes(g2b,M2b,[0,0.2,0.4,0.6],[0,100,200,300,400],
+       'deformación ingenieril  e','tensión ingenieril  S (MPa)', v=>v.toFixed(1), v=>v);
+  line(g2b,M2b,e,S,'#2E6FB0',2.4);
+  marker(g2b,M2b,een,Smax,'#2E6FB0',true);
+  g2b.fillStyle='#2E6FB0'; g2b.font='11.5px Segoe UI, Arial'; g2b.textAlign='left';
+  g2b.fillText('S_máx (UTS)', M2b.px(een)+8, M2b.py(Smax)-4);
+  g2b.strokeStyle='#C9CFD6'; g2b.setLineDash([4,4]); g2b.lineWidth=1;
+  g2b.beginPath(); g2b.moveTo(M2b.px(een),M2b.mt); g2b.lineTo(M2b.px(een),M2b.h-M2b.mb); g2b.stroke(); g2b.setLineDash([]);
+  document.getElementById('st2').innerHTML =
+    'Estricción en ε = n = <b>'+n.toFixed(2)+'</b> (e = '+een.toFixed(3)+'). La tangente corta σ = 0 en ε = n−1 = <b>'+(n-1).toFixed(2)+'</b>.';
+}
+
+// ---------- §1.4 leyes ----------
+const cv4=document.getElementById('cv4'), g4=cv4.getContext('2d');
+const M4=mapper(cv4,0,0.05,0,596.2);
+function draw4(){
+  const E=P.E4*1e3, Y=P.Y4, H=P.H4, KH=P.KH, nH=P.nH, KL=P.KL, nL=P.nL, m=P.m4;
+  const ey=Y/E, N=400;
+  const eps=[],epp=[],lin=[],lud=[],holX=[],holY=[];
+  for(let i=0;i<=N;i++){ const x=1e-6+i/N*0.05; eps.push(x);
+    const ep=Math.max(x-ey,0);
+    epp.push(x<=ey? E*x : Y);
+    lin.push(x<=ey? E*x : Y+H*(x-ey));
+    lud.push(x<=ey? E*x : Y+KL*Math.pow(ep,nL));
+    if(x>ey){ holX.push(x); holY.push(KH*Math.pow(ep,nH)); }
+  }
+  axes(g4,M4,[0,0.01,0.02,0.03,0.04,0.05],[0,100,200,300,400,500,600],
+       'deformación  ε  (–)','tensión  σ  (MPa)', v=>v.toFixed(2), v=>v);
+  line(g4,M4,eps,epp,'#2E6FB0',2);
+  line(g4,M4,eps,lin,'#E08A00',2);
+  line(g4,M4,holX,holY,'#2CA02C',2);
+  line(g4,M4,eps,lud,'#C0392B',2);
+  // Ramberg-Osgood: eps(σ)
+  const rx=[],ry=[]; const smax=Math.max(Y*1.8, lud[N]);
+  for(let i=0;i<=300;i++){ const s=1e-6+i/300*smax; const er=s/E+OFFSET*Math.pow(s/Y,m);
+    if(er<=0.05){ rx.push(er); ry.push(s); } }
+  line(g4,M4,rx,ry,'#8E5AB6',2,[7,4]);
+  // Y y desfase 0,2 %
+  g4.strokeStyle='#C9CFD6'; g4.setLineDash([2,3]); g4.lineWidth=1;
+  g4.beginPath(); g4.moveTo(M4.ml,M4.py(Y)); g4.lineTo(M4.w-M4.mr,M4.py(Y)); g4.stroke(); g4.setLineDash([]);
+  // círculo: límite de proporcionalidad (ε_y, Y)
+  dot(g4,M4,ey,Y,'#111',4.5);
+  g4.fillStyle='#33404d'; g4.font='11.5px Segoe UI, Arial'; g4.textAlign='left';
+  g4.fillText('Y = '+Y.toFixed(0), M4.px(ey)+7, M4.py(Y)+16);
+  // rombo: 0,2 % (donde R-O alcanza Y)
+  const ox=[],oy=[]; for(let i=0;i<=N;i++){ const o=E*(eps[i]-OFFSET); if(o>=0&&o<=Y*1.12){ox.push(eps[i]);oy.push(o);} }
+  line(g4,M4,ox,oy,'#9AA6B2',1,[2,3]);
+  marker(g4,M4,ey+OFFSET,Y,'#5B6675',false);
+  g4.fillStyle='#5B6675'; g4.fillText('conv. 0,2 % (R-O)', M4.px(ey+OFFSET)+8, M4.py(Y)-8);
+}
+
+// ---------- control ----------
+const LABELS = {
+  E1:['v_E1',v=>v.toFixed(0)+' GPa'], Y1:['v_Y1',v=>v.toFixed(0)+' MPa'], n1:['v_n1',v=>v.toFixed(2)],
+  K2:['v_K2',v=>v.toFixed(0)+' MPa'], n2:['v_n2',v=>v.toFixed(2)],
+  E4:['v_E4',v=>v.toFixed(0)+' GPa'], Y4:['v_Y4',v=>v.toFixed(0)+' MPa'], H4:['v_H4',v=>v.toFixed(0)+' MPa'],
+  KH:['v_KH',v=>v.toFixed(0)+' MPa'], nH:['v_nH',v=>v.toFixed(2)],
+  KL:['v_KL',v=>v.toFixed(0)+' MPa'], nL:['v_nL',v=>v.toFixed(2)], m4:['v_m4',v=>v.toFixed(0)]
+};
+const GROUPS = {1:['E1','Y1','n1'], 2:['K2','n2'], 4:['E4','Y4','H4','KH','nH','KL','nL','m4']};
+const DRAW = {1:draw1, 2:draw2, 4:draw4};
+function syncLabel(k){ const [id,fmt]=LABELS[k]; document.getElementById(id).textContent = fmt(P[k]); }
+function redraw(sec){ if(sec===2){draw2();} else DRAW[sec](); }
+
+Object.keys(LABELS).forEach(k=>{
+  const el=document.getElementById(k);
+  el.addEventListener('input', e=>{
+    P[k]=parseFloat(e.target.value); syncLabel(k);
+    const sec = GROUPS[1].includes(k)?1 : GROUPS[2].includes(k)?2 : 4;
+    redraw(sec);
+  });
+});
+const DEFAULTS = {...P};
+document.querySelectorAll('button[data-reset]').forEach(b=>{
+  b.onclick = ()=>{ const sec=+b.dataset.reset;
+    GROUPS[sec].forEach(k=>{ P[k]=DEFAULTS[k]; document.getElementById(k).value=DEFAULTS[k]; syncLabel(k); });
+    redraw(sec);
+  };
+});
+
+// evita que la rueda del ratón cambie un deslizador al desplazar la página
+document.querySelectorAll('input[type=range]').forEach(el=>{
+  el.addEventListener('wheel', e=>e.preventDefault(), {passive:false});
+});
+
+Object.keys(LABELS).forEach(syncLabel);
+draw1(); draw2(); draw4();
+</script>
+</body>
+</html>
