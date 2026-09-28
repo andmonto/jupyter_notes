@@ -184,12 +184,16 @@
   <h2>§1.3 · Inestabilidad en tracción y estricción (Considère)</h2>
   <p class="lead">La carga es <span class="f">F = σA</span>: σ crece y A decrece, así que aparece un
     <b>máximo</b>. Imponiendo <span class="f">dF = 0</span> se llega a <span class="f">dσ/dε = σ</span>;
-    para Hollomon eso da <span class="f">ε<sub>estr</sub> = n</span>. <b>Izquierda:</b> construcción de la
-    tangente (subtangente = 1, corta σ=0 en ε = n−1). <b>Derecha:</b> la carga (tensión ingenieril)
-    alcanza su máximo justo ahí.</p>
+    para Hollomon eso da <span class="f">ε<sub>estr</sub> = n</span>. Aquí se usa la ley de <b>Ludwik</b>
+    <span class="f">σ = σ_Y + Kεⁿ</span> (con <span class="f">σ_Y = 0</span> se recupera Hollomon): sube
+    <span class="f">σ_Y</span> y verás que la estricción se <b>adelanta</b> (ε<sub>estr</sub> &lt; n).
+    <b>Izquierda:</b> construcción de la tangente (subtangente = 1, corta σ=0 en ε = ε<sub>estr</sub>−1).
+    <b>Derecha:</b> la carga (tensión ingenieril) alcanza su máximo justo ahí.</p>
   <div class="wrap">
     <div class="panel">
-      <div class="grp">Ley de Hollomon σ = Kεⁿ</div>
+      <div class="grp">Ley de Ludwik: σ = σ_Y + Kεⁿ &nbsp;(σ_Y = 0 ⟹ Hollomon)</div>
+      <div class="ctrl"><label>Límite elástico σ_Y <span class="val" id="v_sY2">0 MPa</span></label>
+        <input type="range" id="sY2" min="0" max="400" step="10" value="0"></div>
       <div class="ctrl"><label>Resistencia K <span class="val" id="v_K2">520 MPa</span></label>
         <input type="range" id="K2" min="200" max="1200" step="20" value="520"></div>
       <div class="ctrl"><label>Exp. endurecimiento n <span class="val" id="v_n2">0.15</span></label>
@@ -227,6 +231,15 @@
       <p>Es decir, la <b>deformación uniforme</b> (la máxima antes de la estricción) coincide con el
       exponente de endurecimiento n: un material que endurece más (n mayor) estira más antes de
       formar cuello.</p>
+
+      <h4>Aplicado a la ley de Ludwik</h4>
+      <p>Con \(\sigma = \sigma_Y + K\varepsilon^{n}\) se tiene \(d\sigma/d\varepsilon = nK\varepsilon^{n-1}\).
+      Imponiendo el criterio \(d\sigma/d\varepsilon = \sigma\):</p>
+      <div class="eqn box">\( nK\varepsilon^{n-1} = \sigma_Y + K\varepsilon^{n} \;\Rightarrow\; \varepsilon^{\,n-1}(n-\varepsilon) = \dfrac{\sigma_Y}{K} \)</div>
+      <p>A diferencia de Hollomon, <b>no hay solución cerrada</b>: \(\varepsilon_{\text{estr}}\) se resuelve
+      numéricamente (en la gráfica, por bisección). El término \(\sigma_Y\) <b>adelanta la estricción</b>,
+      de modo que \(\varepsilon_{\text{estr}} < n\); y \(\varepsilon_{\text{estr}} \to n\) cuando
+      \(\sigma_Y \to 0\) (se recupera Hollomon). Mueve el deslizador \(\sigma_Y\) de la gráfica para verlo.</p>
 
       <h4>Construcción geométrica</h4>
       <p>El criterio dσ/dε = σ equivale a decir que la <b>subtangente</b> de la curva vale 1:</p>
@@ -344,7 +357,7 @@
 const OFFSET = 0.002;
 const P = {
   E1:200, Y1:250, n1:0.15,
-  K2:520, n2:0.15,
+  sY2:0, K2:520, n2:0.15,
   E4:200, Y4:250, H4:1500, KH:650, nH:0.15, KL:500, nL:0.15, m4:8
 };
 
@@ -442,15 +455,25 @@ function draw1(){
 // ---------- §1.3 Considère ----------
 const cv2a=document.getElementById('cv2a'), g2a=cv2a.getContext('2d');
 const cv2b=document.getElementById('cv2b'), g2b=cv2b.getContext('2d');
-const M2a=mapper(cv2a,-0.9,0.5,0,515.5,54,38), M2b=mapper(cv2b,0,0.6487,0,404.1,54,38);
+const M2a=mapper(cv2a,-1.05,0.5,0,800,54,38), M2b=mapper(cv2b,0,0.6487,0,600,54,38);
+
+// deformación de estricción para Ludwik σ = σ_Y + Kεⁿ: resuelve dσ/dε = σ por
+// bisección. Con σ_Y = 0 la raíz es ε = n (se recupera Hollomon).
+function neckStrain(sY, K, n){
+  const f = e => K*n*Math.pow(e, n-1) - (sY + K*Math.pow(e, n));
+  let lo = 1e-4, hi = n;
+  for(let i=0;i<60;i++){ const m=0.5*(lo+hi); if(f(m)>0) lo=m; else hi=m; }
+  return 0.5*(lo+hi);
+}
+
 function draw2(){
-  const K=P.K2, n=P.n2, N=400;
-  const eps=[],sig=[]; for(let i=0;i<=N;i++){ const x=1e-4+i/N*0.5; eps.push(x); sig.push(K*Math.pow(x,n)); }
-  const en=n, sn=K*Math.pow(n,n);
+  const sY=P.sY2, K=P.K2, n=P.n2, N=400;
+  const eps=[],sig=[]; for(let i=0;i<=N;i++){ const x=1e-4+i/N*0.5; eps.push(x); sig.push(sY+K*Math.pow(x,n)); }
+  const en=neckStrain(sY,K,n), sn=sY+K*Math.pow(en,n);
   const e=[],S=[]; for(let i=0;i<=N;i++){ e.push(Math.expm1(eps[i])); S.push(sig[i]*Math.exp(-eps[i])); }
-  const Smax=sn*Math.exp(-n), een=Math.expm1(n);
+  const Smax=sn*Math.exp(-en), een=Math.expm1(en);
   // panel izquierdo
-  axes(g2a,M2a,[-0.8,-0.4,0,0.4],[0,100,200,300,400,500],
+  axes(g2a,M2a,[-1.0,-0.5,0,0.5],[0,200,400,600,800],
        'deformación verdadera  ε','tensión verdadera  σ (MPa)', v=>v.toFixed(1), v=>v);
   line(g2a,M2a,eps,sig,'#C0392B',2.4);
   const tx=[en-1, Math.min(0.5,en+0.15)], ty=tx.map(x=>sn*(1+(x-en)));
@@ -459,10 +482,10 @@ function draw2(){
   g2a.strokeStyle='#C9CFD6'; g2a.setLineDash([4,4]); g2a.lineWidth=1;
   g2a.beginPath(); g2a.moveTo(M2a.px(en),M2a.mt); g2a.lineTo(M2a.px(en),M2a.h-M2a.mb); g2a.stroke(); g2a.setLineDash([]);
   g2a.fillStyle='#33404d'; g2a.font='11px Segoe UI, Arial'; g2a.textAlign='left';
-  g2a.fillText('subtangente = 1', M2a.px(en-0.55), M2a.py(sn*0.42));
-  g2a.fillText('ε_estr = n = '+n.toFixed(2), M2a.px(en)+5, M2a.mt+14);
+  g2a.fillText('subtangente = 1', M2a.px(-0.98), M2a.py(80));
+  g2a.fillText('ε_estr = '+en.toFixed(3), M2a.px(Math.min(en,0.2))+6, M2a.mt+14);
   // panel derecho
-  axes(g2b,M2b,[0,0.2,0.4,0.6],[0,100,200,300,400],
+  axes(g2b,M2b,[0,0.2,0.4,0.6],[0,200,400,600],
        'deformación ingenieril  e','tensión ingenieril  S (MPa)', v=>v.toFixed(1), v=>v);
   line(g2b,M2b,e,S,'#2E6FB0',2.4);
   marker(g2b,M2b,een,Smax,'#2E6FB0',true);
@@ -470,8 +493,11 @@ function draw2(){
   g2b.fillText('S_máx (UTS)', M2b.px(een)+8, M2b.py(Smax)-4);
   g2b.strokeStyle='#C9CFD6'; g2b.setLineDash([4,4]); g2b.lineWidth=1;
   g2b.beginPath(); g2b.moveTo(M2b.px(een),M2b.mt); g2b.lineTo(M2b.px(een),M2b.h-M2b.mb); g2b.stroke(); g2b.setLineDash([]);
+  const ley = sY>0 ? 'Ludwik' : 'Hollomon';
   document.getElementById('st2').innerHTML =
-    'Estricción en ε = n = <b>'+n.toFixed(2)+'</b> (e = '+een.toFixed(3)+'). La tangente corta σ = 0 en ε = n−1 = <b>'+(n-1).toFixed(2)+'</b>.';
+    '<b>'+ley+'</b> — estricción en ε_estr = <b>'+en.toFixed(3)+'</b> (e = '+een.toFixed(3)+'). ' +
+    (sY>0 ? 'Con σ_Y &gt; 0, ε_estr &lt; n = '+n.toFixed(2)+': la estricción se <b>adelanta</b>.'
+          : 'Con σ_Y = 0 se recupera Hollomon: ε_estr = n = '+n.toFixed(2)+'.');
 }
 
 // ---------- §1.4 leyes ----------
@@ -516,12 +542,12 @@ function draw4(){
 // ---------- control ----------
 const LABELS = {
   E1:['v_E1',v=>v.toFixed(0)+' GPa'], Y1:['v_Y1',v=>v.toFixed(0)+' MPa'], n1:['v_n1',v=>v.toFixed(2)],
-  K2:['v_K2',v=>v.toFixed(0)+' MPa'], n2:['v_n2',v=>v.toFixed(2)],
+  sY2:['v_sY2',v=>v.toFixed(0)+' MPa'], K2:['v_K2',v=>v.toFixed(0)+' MPa'], n2:['v_n2',v=>v.toFixed(2)],
   E4:['v_E4',v=>v.toFixed(0)+' GPa'], Y4:['v_Y4',v=>v.toFixed(0)+' MPa'], H4:['v_H4',v=>v.toFixed(0)+' MPa'],
   KH:['v_KH',v=>v.toFixed(0)+' MPa'], nH:['v_nH',v=>v.toFixed(2)],
   KL:['v_KL',v=>v.toFixed(0)+' MPa'], nL:['v_nL',v=>v.toFixed(2)], m4:['v_m4',v=>v.toFixed(0)]
 };
-const GROUPS = {1:['E1','Y1','n1'], 2:['K2','n2'], 4:['E4','Y4','H4','KH','nH','KL','nL','m4']};
+const GROUPS = {1:['E1','Y1','n1'], 2:['sY2','K2','n2'], 4:['E4','Y4','H4','KH','nH','KL','nL','m4']};
 const DRAW = {1:draw1, 2:draw2, 4:draw4};
 function syncLabel(k){ const [id,fmt]=LABELS[k]; document.getElementById(id).textContent = fmt(P[k]); }
 function redraw(sec){ if(sec===2){draw2();} else DRAW[sec](); }
