@@ -316,8 +316,13 @@
       <div class="codes">
         <div class="grp" style="margin:12px 0 6px">Código de colores</div>
         <div><span class="pill" style="background:#dff0e6;color:#2E8B57">verde</span> régimen elástico según ambos criterios</div>
-        <div><span class="pill" style="background:#fbeacc;color:#a86500">naranja</span> plastificación solo según Tresca (región entre hexágono y elipse)</div>
-        <div><span class="pill" style="background:#f7dcd8;color:#C0392B">rojo</span> plastificación según ambos criterios</div>
+        <div><span class="pill" style="background:#fdf3c4;color:#8a6d00">amarillo</span> plastificación según Tresca (sobre el hexágono) · elástico según Von Mises</div>
+        <div><span class="pill" style="background:#eadcf1;color:#8E44AD">morado</span> plastificación según ambos criterios (estados comunes a ambas superficies)</div>
+        <div><span class="pill" style="background:#fbe3c8;color:#b35f00">naranja</span> no admisible según Tresca · elástico según Von Mises</div>
+        <div><span class="pill" style="background:#f7dcd8;color:#C0392B">rojo</span> no admisible según Tresca · plastificación según Von Mises (sobre la elipse)</div>
+        <div><span class="pill" style="background:#ddd;color:#111">negro</span> no admisible según ambos criterios</div>
+        <div style="color:var(--muted);margin-top:5px">La plastificación solo se produce sobre la superficie de fluencia (tolerancia ±2 %).
+          Un estado exterior no es admisible: con el σ<sub>y</sub> inicial, el material plastifica antes de alcanzarlo.</div>
       </div>
     </div>
     <div>
@@ -501,16 +506,25 @@ function piHex(Y){
 }
 
 // ================== verdicto / color ==================
+const TOL = 0.02;                         // tolerancia para considerar un punto sobre la superficie
 function verdict(){
   const [s1,s2] = principal(P.sxx, P.syy, P.txy);
   const svm = vmPlane(P.sxx, P.syy, P.txy);        // = vonMises(s1,s2,0)
   const st  = tresca3(s1, s2, 0);
-  const inVM = svm <= P.Y, inTR = st <= P.Y;
-  let col, txt;
-  if (inVM && inTR){ col = '#2E8B57'; txt = 'Régimen elástico según ambos criterios'; }
-  else if (inVM && !inTR){ col = '#E08A00'; txt = 'Plastificación según Tresca · régimen elástico según Von Mises'; }
-  else { col = '#C0392B'; txt = 'Plastificación según ambos criterios'; }
-  return {s1, s2, svm, st, col, txt};
+  // Estado respecto a cada superficie de fluencia inicial: dentro (elástico), sobre ella
+  // (plastificación, con tolerancia TOL) o fuera (no admisible: el material habría
+  // plastificado antes de alcanzarlo).
+  const cls = r => r < 1-TOL ? 'in' : (r <= 1+TOL ? 'on' : 'out');
+  const T = cls(st/P.Y), M = cls(svm/P.Y);
+  const C = {
+    'in,in':   ['#2E8B57','#2E8B57','Régimen elástico según ambos criterios'],
+    'on,in':   ['#F2C200','#8a6d00','Plastificación según Tresca · régimen elástico según Von Mises'],
+    'on,on':   ['#8E44AD','#8E44AD','Plastificación según ambos criterios'],
+    'out,in':  ['#E67E00','#b35f00','No admisible según Tresca · régimen elástico según Von Mises'],
+    'out,on':  ['#C0392B','#C0392B','No admisible según Tresca · plastificación según Von Mises'],
+    'out,out': ['#111111','#111111','No admisible según ambos criterios']
+  }[T+','+M];
+  return {s1, s2, svm, st, col:C[0], tcol:C[1], txt:C[2], T, M};
 }
 
 // ================== mapa 2D (aspecto igual, marco FIJO al σ_y por defecto) ==================
@@ -720,7 +734,8 @@ cv3.addEventListener('pointerup', ()=>{ drag3=false; cv3.style.cursor='grab'; })
 function refreshStatus(){
   const V = verdict();
   document.getElementById('status').innerHTML =
-    '<span class="big" style="color:'+V.col+'">'+V.txt+'</span><br>'+
+    '<span class="big" style="color:'+V.tcol+'">'+V.txt+'</span><br>'+
+    (V.T==='out' ? '<span style="color:var(--muted)">Con σ<sub>y</sub> = '+P.Y.toFixed(0)+' MPa, el material plastifica antes de alcanzar este estado.</span><br>' : '')+
     'σ̄<sub>VM</sub> = <b>'+V.svm.toFixed(0)+'</b> MPa &nbsp;·&nbsp; (σ₁ − σ₃)<sub>Tresca</sub> = <b>'+V.st.toFixed(0)+'</b> MPa &nbsp;·&nbsp; σ<sub>y</sub> = '+P.Y.toFixed(0)+' MPa<br>'+
     'Tensiones principales: σ₁ = '+V.s1.toFixed(0)+', σ₂ = '+V.s2.toFixed(0)+', σ₃ = 0';
 }
