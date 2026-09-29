@@ -132,17 +132,17 @@
 <!-- ============================ §1.1–1.2 ============================ -->
 <section>
   <h2>Curva ingenieril vs. verdadera</h2>
-  <p class="lead">Se modela el material como elástico (pendiente <span class="f">E</span>) seguido de
+  <p class="lead">Se considera un comportamiento elástico lineal (pendiente <span class="f">E</span>) seguido de
     endurecimiento potencial. La curva <span class="f">verdadera</span> siempre queda por encima de la
     <span class="f">ingenieril</span> porque <span class="f">σ = S(1+e)</span>. La ingenieril presenta un
-    <b>máximo (S<sub>máx</sub>, resistencia a tracción)</b> justo en la estricción; a partir de ahí la
+    <b>máximo (S<sub>máx</sub>, resistencia a tracción)</b> justo al comienzo de la estricción; a partir de ahí, la
     deformación deja de ser uniforme (tramo discontinuo).</p>
   <div class="wrap">
     <div class="panel">
       <div class="grp">Material</div>
       <div class="ctrl"><label>E <span class="val" id="v_E1">200 GPa</span></label>
         <input type="range" id="E1" min="50" max="400" step="10" value="200"></div>
-      <div class="ctrl"><label>Límite elástico Y <span class="val" id="v_Y1">250 MPa</span></label>
+      <div class="ctrl"><label><span>Límite elástico σ<sub>y</sub></span> <span class="val" id="v_Y1">250 MPa</span></label>
         <input type="range" id="Y1" min="50" max="600" step="10" value="250"></div>
       <div class="ctrl"><label>Exp. endurecimiento n <span class="val" id="v_n1">0.15</span></label>
         <input type="range" id="n1" min="0.02" max="0.5" step="0.01" value="0.15"></div>
@@ -176,7 +176,7 @@
       <p>En deformación plástica el volumen se conserva, de modo que:</p>
       <div class="eqn box">\( V = A_0 L_0 = A\,L = \text{cte} \;\Rightarrow\; \dfrac{A_0}{A} = \dfrac{L}{L_0} \)</div>
 
-      <h4>Cómo se pasa de unas magnitudes a otras</h4>
+      <h4>Relación entre magnitudes ingenieriles y verdaderas</h4>
       <div class="der">
         <div class="eqn"><span class="s">deformación:</span> \( \varepsilon = \ln\frac{L}{L_0} = \ln\frac{L_0+\Delta L}{L_0} = \ln\!\Big(1 + \tfrac{\Delta L}{L_0}\Big) = \boldsymbol{\ln(1 + e)} \)</div>
         <div class="eqn"><span class="s">tensión:</span> \( \sigma = \frac{F}{A} = \frac{F}{A_0}\cdot\frac{A_0}{A} = S\cdot\frac{L}{L_0} = \boldsymbol{S(1 + e)} \)</div>
@@ -188,9 +188,9 @@
       lo que solo se cumple <b>hasta la estricción</b>. A partir de ahí la deformación se localiza
       en el cuello y A, L dejan de ser uniformes (por eso el tramo ingenieril se dibuja discontinuo).</p>
 
-      <p><b>Límite elástico Y y ε_y.</b> En el tramo elástico rige Hooke (σ = Eε); la fluencia
-      empieza en la <b>deformación de fluencia</b> ε_y = Y/E. El <b>límite elástico convencional</b>
-      S_Y se define con un desfase de deformación plástica del 0,2 % (x = 0,002).</p>
+      <p><b>Límite elástico σ<sub>y</sub> y deformación de fluencia ε<sub>y</sub>.</b> En el tramo elástico se cumple la ley de Hooke (σ = Eε);
+      la fluencia se inicia en la <b>deformación de fluencia</b> ε<sub>y</sub> = σ<sub>y</sub>/E. El <b>límite elástico convencional</b>
+      σ<sub>y</sub> se define mediante una deformación plástica remanente del 0,2 % (ε<sub>p</sub> = 0,002).</p>
     </div>
   </details>
 </section>
@@ -200,17 +200,17 @@
   <h2>Inestabilidad en tracción y estricción (Considère)</h2>
   <p class="lead">La carga es <span class="f">F = σA</span>: σ crece y A decrece, así que aparece un
     <b>máximo</b>. Imponiendo <span class="f">dF = 0</span> se llega a <span class="f">dσ/dε = σ</span>;
-    para Hollomon eso da <span class="f">ε<sub>estr</sub> = n</span>. Aquí se usa la ley de <b>Ludwik</b>
-    <span class="f">σ = σ_Y + Kεⁿ</span> (con <span class="f">σ_Y = 0</span> se recupera Hollomon): sube
-    <span class="f">σ_Y</span> y verás que la estricción se <b>adelanta</b> (ε<sub>estr</sub> &lt; n).
+    para Hollomon se obtiene <span class="f">ε<sub>estr</sub> = n</span>. Aquí se emplea la ley de <b>Ludwik</b>
+    <span class="f">σ = σ<sub>y</sub> + Kεⁿ</span> (con <span class="f">σ<sub>y</sub> = 0</span> se recupera Hollomon): al aumentar
+    <span class="f">σ<sub>y</sub></span>, la estricción se produce a <b>menor deformación</b> (ε<sub>estr</sub> &lt; n).
     <b>Izquierda:</b> construcción de la tangente (subtangente = 1, corta σ=0 en ε = ε<sub>estr</sub>−1).
-    <b>Derecha:</b> la carga (tensión ingenieril) alcanza su máximo justo ahí.</p>
+    <b>Derecha:</b> la carga (tensión ingenieril) alcanza su máximo en ese mismo punto.</p>
   <div class="wrap">
     <div class="panel">
-      <div class="grp">Ley de Ludwik: σ = σ_Y + Kεⁿ &nbsp;(σ_Y = 0 ⟹ Hollomon)</div>
-      <div class="ctrl"><label>Límite elástico σ_Y <span class="val" id="v_sY2">0 MPa</span></label>
+      <div class="grp">Ley de Ludwik: σ = σ<sub>y</sub> + Kεⁿ &nbsp;(σ<sub>y</sub> = 0 ⟹ Hollomon)</div>
+      <div class="ctrl"><label><span>Límite elástico σ<sub>y</sub></span> <span class="val" id="v_sY2">0 MPa</span></label>
         <input type="range" id="sY2" min="0" max="400" step="10" value="0"></div>
-      <div class="ctrl"><label>Resistencia K <span class="val" id="v_K2">520 MPa</span></label>
+      <div class="ctrl"><label>Coef. de resistencia K <span class="val" id="v_K2">520 MPa</span></label>
         <input type="range" id="K2" min="200" max="1200" step="20" value="520"></div>
       <div class="ctrl"><label>Exp. endurecimiento n <span class="val" id="v_n2">0.15</span></label>
         <input type="range" id="n2" min="0.02" max="0.5" step="0.01" value="0.15"></div>
@@ -226,11 +226,11 @@
   <details class="theory">
     <summary>Ver teoría: cómo se obtiene el criterio de Considère</summary>
     <div class="body">
-      <h4>El problema: máximo de carga</h4>
+      <h4>Planteamiento: máximo de carga</h4>
       <p>La fuerza que soporta la probeta es F = σ·A. Durante el ensayo compiten dos efectos:
-      la tensión verdadera <b>crece</b> (endurecimiento) mientras la sección <b>disminuye</b>
-      (conservación de volumen). Al principio gana el endurecimiento y F sube; llega un momento
-      en que gana la reducción de área y F baja. En ese <b>máximo de carga</b> empieza la
+      la tensión verdadera <b>aumenta</b> (endurecimiento por deformación) mientras la sección <b>disminuye</b>
+      (conservación del volumen). Inicialmente predomina el endurecimiento y F aumenta; a partir de
+      cierto punto predomina la reducción de sección y F disminuye. En ese <b>máximo de carga</b> se inicia la
       <b>estricción</b>. Matemáticamente, el máximo cumple dF = 0.</p>
 
       <h4>Deducción</h4>
@@ -245,17 +245,17 @@
       <p>Con \(\sigma = K\varepsilon^{n}\) se tiene \(d\sigma/d\varepsilon = nK\varepsilon^{n-1}\). Imponiendo el criterio \(d\sigma/d\varepsilon = \sigma\):</p>
       <div class="eqn box">\( nK\varepsilon^{n-1} = K\varepsilon^{n} \;\Rightarrow\; n = \varepsilon \;\Rightarrow\; \boldsymbol{\varepsilon_{\text{estr}} = n} \)</div>
       <p>Es decir, la <b>deformación uniforme</b> (la máxima antes de la estricción) coincide con el
-      exponente de endurecimiento n: un material que endurece más (n mayor) estira más antes de
-      formar cuello.</p>
+      exponente de endurecimiento n: cuanto mayor es n, mayor es la deformación uniforme que admite
+      el material antes de la estricción.</p>
 
       <h4>Aplicado a la ley de Ludwik</h4>
-      <p>Con \(\sigma = \sigma_Y + K\varepsilon^{n}\) se tiene \(d\sigma/d\varepsilon = nK\varepsilon^{n-1}\).
+      <p>Con \(\sigma = \sigma_y + K\varepsilon^{n}\) se tiene \(d\sigma/d\varepsilon = nK\varepsilon^{n-1}\).
       Imponiendo el criterio \(d\sigma/d\varepsilon = \sigma\):</p>
-      <div class="eqn box">\( nK\varepsilon^{n-1} = \sigma_Y + K\varepsilon^{n} \;\Rightarrow\; \varepsilon^{\,n-1}(n-\varepsilon) = \dfrac{\sigma_Y}{K} \)</div>
+      <div class="eqn box">\( nK\varepsilon^{n-1} = \sigma_y + K\varepsilon^{n} \;\Rightarrow\; \varepsilon^{\,n-1}(n-\varepsilon) = \dfrac{\sigma_y}{K} \)</div>
       <p>A diferencia de Hollomon, <b>no hay solución cerrada</b>: \(\varepsilon_{\text{estr}}\) se resuelve
-      numéricamente (en la gráfica, por bisección). El término \(\sigma_Y\) <b>adelanta la estricción</b>,
+      numéricamente (en la gráfica, por bisección). El término \(\sigma_y\) <b>reduce la deformación de estricción</b>,
       de modo que \(\varepsilon_{\text{estr}} < n\); y \(\varepsilon_{\text{estr}} \to n\) cuando
-      \(\sigma_Y \to 0\) (se recupera Hollomon). Mueve el deslizador \(\sigma_Y\) de la gráfica para verlo.</p>
+      \(\sigma_y \to 0\) (se recupera Hollomon). Puede comprobarse variando \(\sigma_y\) en la gráfica.</p>
 
       <h4>Construcción geométrica</h4>
       <p>El criterio dσ/dε = σ equivale a decir que la <b>subtangente</b> de la curva vale 1:</p>
@@ -274,31 +274,31 @@
 <!-- ============================ §1.4 ============================ -->
 <section id="leyes">
   <h2>Leyes empíricas tensión–deformación</h2>
-  <p class="lead">Se superponen cinco modelos para el mismo <span class="f">E</span> y <span class="f">Y</span>.
-    <b>Hollomon</b> (σ = K<sub>H</sub>εₚⁿ) no tiene término de límite elástico: se dibuja solo desde la
-    fluencia y <i>no</i> empalma con la recta elástica — eso es justo lo que corrige <b>Ludwik</b>
-    (σ = σ<sub>Y</sub> + K<sub>L</sub>εₚ<sup>n<sub>L</sub></sup>). <b>Ramberg–Osgood</b> usa el límite
-    elástico convencional del 0,2 %, por lo que alcanza Y en ε<sub>y</sub>+0,002 (rombo ◆), no en
+  <p class="lead">Se comparan cinco modelos con los mismos <span class="f">E</span> y <span class="f">σ<sub>y</sub></span>.
+    <b>Hollomon</b> (σ = K<sub>H</sub>εₚⁿ) carece de término de límite elástico: se representa solo a partir de la
+    fluencia y <i>no</i> es continua con el tramo elástico, limitación que resuelve la ley de <b>Ludwik</b>
+    (σ = σ<sub>y</sub> + K<sub>L</sub>εₚ<sup>n<sub>L</sub></sup>). <b>Ramberg–Osgood</b> emplea el límite
+    elástico convencional del 0,2 %, por lo que alcanza σ<sub>y</sub> en ε<sub>y</sub> + 0,002 (cuadrado ■) y no en
     ε<sub>y</sub> (círculo ●).</p>
   <div class="wrap">
     <div class="panel">
       <div class="grp">Material</div>
       <div class="ctrl"><label>E <span class="val" id="v_E4">200 GPa</span></label>
         <input type="range" id="E4" min="50" max="400" step="10" value="200"></div>
-      <div class="ctrl"><label>Límite elástico Y <span class="val" id="v_Y4">250 MPa</span></label>
+      <div class="ctrl"><label><span>Límite elástico σ<sub>y</sub></span> <span class="val" id="v_Y4">250 MPa</span></label>
         <input type="range" id="Y4" min="50" max="600" step="10" value="250"></div>
       <div class="grp" style="margin-top:10px">Endurecimiento lineal</div>
       <div class="ctrl"><label>H <span class="val" id="v_H4">1500 MPa</span></label>
         <input type="range" id="H4" min="0" max="8000" step="100" value="1500"></div>
       <div class="grp" style="margin-top:10px">Hollomon</div>
-      <div class="ctrl"><label>K<sub>H</sub> <span class="val" id="v_KH">650 MPa</span></label>
+      <div class="ctrl"><label><span>K<sub>H</sub></span> <span class="val" id="v_KH">650 MPa</span></label>
         <input type="range" id="KH" min="200" max="1500" step="25" value="650"></div>
       <div class="ctrl"><label>n <span class="val" id="v_nH">0.15</span></label>
         <input type="range" id="nH" min="0.02" max="0.5" step="0.01" value="0.15"></div>
       <div class="grp" style="margin-top:10px">Ludwik</div>
-      <div class="ctrl"><label>K<sub>L</sub> <span class="val" id="v_KL">500 MPa</span></label>
+      <div class="ctrl"><label><span>K<sub>L</sub></span> <span class="val" id="v_KL">500 MPa</span></label>
         <input type="range" id="KL" min="100" max="2000" step="50" value="500"></div>
-      <div class="ctrl"><label>n<sub>L</sub> <span class="val" id="v_nL">0.15</span></label>
+      <div class="ctrl"><label><span>n<sub>L</sub></span> <span class="val" id="v_nL">0.15</span></label>
         <input type="range" id="nL" min="0.02" max="0.5" step="0.01" value="0.15"></div>
       <div class="grp" style="margin-top:10px">Ramberg–Osgood</div>
       <div class="ctrl"><label>exponente m <span class="val" id="v_m4">8</span></label>
@@ -321,14 +321,14 @@
     <summary>Ver teoría: ecuaciones de las leyes de endurecimiento</summary>
     <div class="body">
       <p>Se busca representar analíticamente la <b>parte plástica</b> de la curva σ–ε. Con la
-      deformación de fluencia ε_y = Y/E y la deformación plástica ε_p ≈ ε − ε_y, las cinco leyes son:</p>
+      deformación de fluencia ε<sub>y</sub> = σ<sub>y</sub>/E y la deformación plástica ε<sub>p</sub> ≈ ε − ε<sub>y</sub>, las cinco leyes son:</p>
 
       <h4>1 · Elástico – perfectamente plástico</h4>
-      <div class="eqn box">\( \sigma = E\varepsilon \ \ (\varepsilon \le \varepsilon_y) \qquad|\qquad \sigma = Y \ \ (\varepsilon > \varepsilon_y) \)</div>
-      <p>No endurece: una vez alcanzado Y, la tensión se mantiene constante. Idealización más simple.</p>
+      <div class="eqn box">\( \sigma = E\varepsilon \ \ (\varepsilon \le \varepsilon_y) \qquad|\qquad \sigma = \sigma_y \ \ (\varepsilon > \varepsilon_y) \)</div>
+      <p>Sin endurecimiento: una vez alcanzado σ<sub>y</sub>, la tensión permanece constante. Es la idealización más sencilla.</p>
 
       <h4>2 · Elástico – lineal con endurecimiento</h4>
-      <div class="eqn box">\( \sigma = Y + H(\varepsilon - \varepsilon_y) \qquad (\varepsilon > \varepsilon_y) \)</div>
+      <div class="eqn box">\( \sigma = \sigma_y + H(\varepsilon - \varepsilon_y) \qquad (\varepsilon > \varepsilon_y) \)</div>
       <p>H es el <b>módulo de endurecimiento</b> (pendiente de la recta plástica). El módulo
       tangente total cumple 1/E_t = 1/E + 1/H.</p>
 
@@ -337,36 +337,28 @@
       <ul>
         <li><b>K<sub>H</sub></b> = coeficiente de resistencia; <b>n</b> = exponente de endurecimiento por deformación (n = 0 ⟹ perfectamente plástico).</li>
         <li>Ambos se obtienen <b>ajustando la zona plástica</b>: en ejes log σ – log ε_p la ley es una recta de pendiente n y ordenada en el origen log K<sub>H</sub>. De ahí K<sub>H</sub> = σ(ε_p = 1).</li>
-        <li><b>No tiene término de límite elástico</b>: σ → 0 cuando ε_p → 0. Por eso se dibuja solo desde la fluencia y no empalma con la recta elástica.</li>
+        <li><b>Carece de término de límite elástico</b>: σ → 0 cuando ε<sub>p</sub> → 0. Por ello se representa solo a partir de la fluencia y no es continua con el tramo elástico.</li>
       </ul>
 
       <h4>4 · Ludwik</h4>
-      <div class="eqn box">\( \sigma = \sigma_Y + K_L\,\varepsilon_p^{\,n_L} \)</div>
-      <p>Es Hollomon <b>más</b> un término aditivo de límite elástico, de modo que la rama plástica
-      <b>arranca en σ<sub>Y</sub></b> (σ = σ_Y cuando ε_p = 0). Corrige la principal carencia de Hollomon.</p>
+      <div class="eqn box">\( \sigma = \sigma_y + K_L\,\varepsilon_p^{\,n_L} \)</div>
+      <p>Añade a la ley de Hollomon un término aditivo de límite elástico, de modo que la rama plástica
+      <b>se inicia en σ<sub>y</sub></b> (σ = σ<sub>y</sub> cuando ε<sub>p</sub> = 0). Corrige así la principal limitación de Hollomon.</p>
 
       <h4>5 · Ramberg–Osgood</h4>
-      <div class="eqn box">\( \varepsilon = \dfrac{\sigma}{E} + \alpha\Big(\dfrac{\sigma}{Y}\Big)^{m} , \qquad \alpha = 0{,}002 \)</div>
+      <div class="eqn box">\( \varepsilon = \dfrac{\sigma}{E} + \alpha\Big(\dfrac{\sigma}{\sigma_y}\Big)^{m} , \qquad \alpha = 0{,}002 \)</div>
       <ul>
-        <li>Representa la transición elástico-plástica de forma <b>continua</b>, sin un codo abrupto. El primer término es la parte elástica; el segundo, la plástica.</li>
-        <li>Aquí Y es el <b>límite elástico convencional del 0,2 %</b>, así que la curva alcanza σ = Y en ε = ε_y + α = ε_y + 0,002 (rombo ◆), <b>no</b> en ε_y (círculo ●). Por eso R-O va desplazada a la derecha.</li>
-        <li>Subir el exponente m <b>afila</b> el codo (se acerca al límite elástico neto), pero nunca lo alcanza: el término plástico α(σ/Y)<sup>m</sup> no se anula en σ = Y.</li>
+        <li>Describe la transición elástico-plástica de forma <b>continua</b>, sin punto anguloso. El primer término corresponde a la deformación elástica; el segundo, a la plástica.</li>
+        <li>Aquí σ<sub>y</sub> es el <b>límite elástico convencional del 0,2 %</b>, por lo que la curva alcanza σ = σ<sub>y</sub> en ε = ε<sub>y</sub> + α = ε<sub>y</sub> + 0,002 (cuadrado ■) y <b>no</b> en ε<sub>y</sub> (círculo ●). Por ello la curva de Ramberg–Osgood aparece desplazada hacia mayores deformaciones.</li>
+        <li>Al aumentar el exponente m, la transición elástico-plástica se vuelve <b>más brusca</b> y la curva tiende al comportamiento elástico-perfectamente plástico, sin llegar a reproducirlo: el término plástico α(σ/σ<sub>y</sub>)<sup>m</sup> no se anula en σ = σ<sub>y</sub>.</li>
       </ul>
 
       <div class="key"><b>Conexión con Considère:</b> como ε_estr = n para Hollomon, el exponente de
-      endurecimiento no solo fija la forma de la curva plástica, sino también <b>cuánto estira el
-      material antes de la estricción</b>.</div>
+      endurecimiento no solo determina la forma de la curva plástica, sino también la <b>deformación
+      uniforme máxima antes de la estricción</b>.</div>
     </div>
   </details>
 </section>
-
-<div class="note">
-  <b>Resumen:</b> σ = S(1+e), ε = ln(1+e) (deformación uniforme, incompresibilidad plástica).
-  El límite elástico convencional S<sub>Y</sub> se define con el desfase del 0,2 %. La inestabilidad
-  (Considère) ocurre en dσ/dε = σ, con ε<sub>estr</sub> = n para Hollomon y S<sub>máx</sub> = resistencia
-  a tracción (UTS). Esta curva uniaxial es la que calibra los criterios multiaxiales (Tresca, Von Mises)
-  y las leyes de endurecimiento de las secciones siguientes.
-</div>
 
 <script>
 "use strict";
@@ -455,7 +447,7 @@ function draw1(){
   // marcadores
   dot(g1,M1,ey,Y,'#111',5);
   g1.fillStyle='#33404d'; g1.font='12px Segoe UI, Arial'; g1.textAlign='left';
-  g1.fillText('S_Y = '+Y.toFixed(0), M1.px(ey)+8, M1.py(Y)+16);
+  g1.fillText('σ_y = '+Y.toFixed(0), M1.px(ey)+8, M1.py(Y)+16);
   marker(g1,M1,een,Smax,'#2E6FB0',true);
   g1.fillStyle='#2E6FB0'; g1.fillText('S_máx = '+Smax.toFixed(0)+' (UTS)', M1.px(een)+9, M1.py(Smax)-6);
   dot(g1,M1,en,sn,'#C0392B',5);
@@ -464,7 +456,7 @@ function draw1(){
   g1.fillStyle='#5B6675'; g1.font='11px Segoe UI, Arial';
   g1.fillText('estricción  ε = n = '+n.toFixed(2), M1.px(en)+6, M1.h-M1.mb-8);
   document.getElementById('st1').innerHTML =
-    'Fluye en ε_y = <b>'+(ey).toFixed(4)+'</b>. Estricción (UTS) en ε = n = <b>'+n.toFixed(2)+
+    'Fluencia en ε_y = <b>'+(ey).toFixed(4)+'</b>. Estricción (UTS) en ε = n = <b>'+n.toFixed(2)+
     '</b>. S_máx = <b>'+Smax.toFixed(0)+'</b> MPa, σ_verdadera ahí = <b>'+sn.toFixed(0)+'</b> MPa.';
 }
 
@@ -473,8 +465,8 @@ const cv2a=document.getElementById('cv2a'), g2a=cv2a.getContext('2d');
 const cv2b=document.getElementById('cv2b'), g2b=cv2b.getContext('2d');
 const M2a=mapper(cv2a,-1.05,0.5,0,800,54,38), M2b=mapper(cv2b,0,0.6487,0,600,54,38);
 
-// deformación de estricción para Ludwik σ = σ_Y + Kεⁿ: resuelve dσ/dε = σ por
-// bisección. Con σ_Y = 0 la raíz es ε = n (se recupera Hollomon).
+// deformación de estricción para Ludwik σ = σ_y + Kεⁿ: resuelve dσ/dε = σ por
+// bisección. Con σ_y = 0 la raíz es ε = n (se recupera Hollomon).
 function neckStrain(sY, K, n){
   const f = e => K*n*Math.pow(e, n-1) - (sY + K*Math.pow(e, n));
   let lo = 1e-4, hi = n;
@@ -512,8 +504,8 @@ function draw2(){
   const ley = sY>0 ? 'Ludwik' : 'Hollomon';
   document.getElementById('st2').innerHTML =
     '<b>'+ley+'</b> — estricción en ε_estr = <b>'+en.toFixed(3)+'</b> (e = '+een.toFixed(3)+'). ' +
-    (sY>0 ? 'Con σ_Y &gt; 0, ε_estr &lt; n = '+n.toFixed(2)+': la estricción se <b>adelanta</b>.'
-          : 'Con σ_Y = 0 se recupera Hollomon: ε_estr = n = '+n.toFixed(2)+'.');
+    (sY>0 ? 'Con σ_y &gt; 0, ε_estr &lt; n = '+n.toFixed(2)+': la estricción se produce a <b>menor deformación</b>.'
+          : 'Con σ_y = 0 se recupera Hollomon: ε_estr = n = '+n.toFixed(2)+'.');
 }
 
 // ---------- §1.4 leyes ----------
@@ -544,14 +536,14 @@ function draw4(){
   // Y y desfase 0,2 %
   g4.strokeStyle='#C9CFD6'; g4.setLineDash([2,3]); g4.lineWidth=1;
   g4.beginPath(); g4.moveTo(M4.ml,M4.py(Y)); g4.lineTo(M4.w-M4.mr,M4.py(Y)); g4.stroke(); g4.setLineDash([]);
-  // círculo: límite de proporcionalidad (ε_y, Y)
+  // círculo: límite de proporcionalidad (ε_y, σ_y)
   dot(g4,M4,ey,Y,'#111',4.5);
   g4.fillStyle='#33404d'; g4.font='11.5px Segoe UI, Arial'; g4.textAlign='left';
-  g4.fillText('Y = '+Y.toFixed(0), M4.px(ey)+7, M4.py(Y)+16);
-  // rombo: 0,2 % (donde R-O alcanza Y)
+  g4.fillText('σ_y = '+Y.toFixed(0), M4.px(ey)+7, M4.py(Y)+16);
+  // cuadrado: 0,2 % (donde R-O alcanza σ_y)
   const ox=[],oy=[]; for(let i=0;i<=N;i++){ const o=E*(eps[i]-OFFSET); if(o>=0&&o<=Y*1.12){ox.push(eps[i]);oy.push(o);} }
   line(g4,M4,ox,oy,'#9AA6B2',1,[2,3]);
-  marker(g4,M4,ey+OFFSET,Y,'#5B6675',false);
+  marker(g4,M4,ey+OFFSET,Y,'#5B6675',true);
   g4.fillStyle='#5B6675'; g4.fillText('conv. 0,2 % (R-O)', M4.px(ey+OFFSET)+8, M4.py(Y)-8);
 }
 
