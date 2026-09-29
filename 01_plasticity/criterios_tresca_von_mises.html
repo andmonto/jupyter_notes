@@ -508,7 +508,11 @@ function piHex(Y){
 // ================== verdicto / color ==================
 const TOL = 0.02;                         // tolerancia para considerar un punto sobre la superficie
 function verdict(){
-  const [s1,s2] = principal(P.sxx, P.syy, P.txy);
+  // σ₁ se asocia a la dirección principal más próxima al eje x (y σ₂ a la más próxima a y), de modo
+  // que con τxy = 0 el punto queda en (σxx, σyy) y sigue al cursor a ambos lados de la diagonal.
+  // Ambos criterios son simétricos respecto al intercambio σ₁ ↔ σ₂, así que el veredicto no cambia.
+  const [pa,pb] = principal(P.sxx, P.syy, P.txy);
+  const [s1,s2] = P.sxx >= P.syy ? [pa,pb] : [pb,pa];
   const svm = vmPlane(P.sxx, P.syy, P.txy);        // = vonMises(s1,s2,0)
   const st  = tresca3(s1, s2, 0);
   // Estado respecto a cada superficie de fluencia inicial: dentro (elástico), sobre ella
@@ -621,7 +625,7 @@ function setPointFromPixel(ev){
   document.getElementById('sxx').value = P.sxx;
   document.getElementById('syy').value = P.syy;
   document.getElementById('txy').value = 0;
-  refresh();
+  syncLabels(); refresh();
 }
 cvPS.addEventListener('pointerdown', e=>{ dragPS=true; cvPS.setPointerCapture(e.pointerId); setPointFromPixel(e); });
 cvPS.addEventListener('pointermove', e=>{ if(dragPS) setPointFromPixel(e); });
