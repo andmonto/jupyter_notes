@@ -309,8 +309,8 @@
         <input class="stress" type="range" id="sxx" min="-600" max="600" step="10" value="0"></div>
       <div class="ctrl"><label><span>σ<sub>yy</sub></span> <span class="val" id="vYY">0 MPa</span></label>
         <input class="stress" type="range" id="syy" min="-600" max="600" step="10" value="0"></div>
-      <div class="ctrl"><label><span>τ<sub>xy</sub></span> <span class="val" id="vTXY">135 MPa</span></label>
-        <input class="stress" type="range" id="txy" min="-400" max="400" step="5" value="135"></div>
+      <div class="ctrl"><label><span>τ<sub>xy</sub></span> <span class="val" id="vTXY">100 MPa</span></label>
+        <input class="stress" type="range" id="txy" min="-400" max="400" step="5" value="100"></div>
       <button id="reset">Restablecer</button>
       <div class="status" id="status"></div>
       <div class="codes">
@@ -475,7 +475,7 @@
 <script>
 "use strict";
 // ================== estado ==================
-const P = {Y:250, sxx:0, syy:0, txy:135};
+const P = {Y:250, sxx:0, syy:0, txy:100};
 
 // ================== álgebra ==================
 const S2 = Math.SQRT2, S23 = Math.sqrt(2/3), S16 = Math.sqrt(1/6);
@@ -754,9 +754,9 @@ function syncLabels(){
   });
 });
 document.getElementById('reset').onclick = ()=>{
-  Object.assign(P, {Y:250, sxx:0, syy:0, txy:135});
+  Object.assign(P, {Y:250, sxx:0, syy:0, txy:100});
   document.getElementById('Y').value=250; document.getElementById('sxx').value=0;
-  document.getElementById('syy').value=0; document.getElementById('txy').value=135;
+  document.getElementById('syy').value=0; document.getElementById('txy').value=100;
   syncLabels(); refresh();
 };
 
