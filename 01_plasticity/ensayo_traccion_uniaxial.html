@@ -288,9 +288,10 @@
 <section id="leyes">
   <h2>Leyes empíricas tensión–deformación</h2>
   <p class="lead">Se comparan cinco modelos con los mismos <span class="f">E</span> y <span class="f">σ<sub>y</sub></span>.
-    <b>Hollomon</b> (σ = K<sub>H</sub>εₚⁿ) carece de término de límite elástico: se representa solo a partir de la
-    fluencia y <i>no</i> es continua con el tramo elástico, limitación que resuelve la ley de <b>Ludwik</b>
-    (σ = σ<sub>y</sub> + K<sub>L</sub>εₚ<sup>n<sub>L</sub></sup>). <b>Ramberg–Osgood</b> emplea el límite
+    <b>Hollomon</b> (σ = K<sub>H</sub>εₚⁿ) carece de término de límite elástico; para que empalme con el
+    tramo elástico en σ<sub>y</sub> se representa en la forma de <b>Swift</b>, σ = K<sub>H</sub>(ε₀ + εₚ)ⁿ.
+    <b>Ludwik</b> (σ = σ<sub>y</sub> + K<sub>L</sub>εₚ<sup>n<sub>L</sub></sup>) incorpora el límite elástico de forma
+    aditiva. <b>Ramberg–Osgood</b> emplea el límite
     elástico convencional del 0,2 %, por lo que alcanza σ<sub>y</sub> en ε<sub>y</sub> + 0,002 (cuadrado ■) y no en
     ε<sub>y</sub> (círculo ●).</p>
   <div class="wrap">
@@ -322,7 +323,7 @@
       <div class="legend">
         <span><i class="sw" style="border-color:var(--c1)"></i>elást.–perf. plástico</span>
         <span><i class="sw" style="border-color:var(--c2)"></i>elást.–lineal (H)</span>
-        <span><i class="sw" style="border-color:var(--c3)"></i>Hollomon</span>
+        <span><i class="sw" style="border-color:var(--c3)"></i>Hollomon (Swift)</span>
         <span><i class="sw" style="border-color:var(--c4)"></i>Ludwik</span>
         <span><i class="sw" style="border-color:var(--c5);border-top-style:dashed"></i>Ramberg–Osgood</span>
       </div>
@@ -350,13 +351,19 @@
       <ul>
         <li><b>K<sub>H</sub></b> = coeficiente de resistencia; <b>n</b> = exponente de endurecimiento por deformación (n = 0 ⟹ perfectamente plástico).</li>
         <li>Ambos se obtienen <b>ajustando la zona plástica</b>: en ejes log σ – log ε_p la ley es una recta de pendiente n y ordenada en el origen log K<sub>H</sub>. De ahí K<sub>H</sub> = σ(ε_p = 1).</li>
-        <li><b>Carece de término de límite elástico</b>: σ → 0 cuando ε<sub>p</sub> → 0. Por ello se representa solo a partir de la fluencia y no es continua con el tramo elástico.</li>
+        <li><b>Carece de término de límite elástico</b>: σ → 0 cuando ε<sub>p</sub> → 0, de modo que por sí sola no empalma con el tramo elástico.</li>
       </ul>
+      <p>Para que la curva empiece en σ<sub>y</sub> se introduce una deformación previa ε<sub>0</sub> (<b>ley de Swift</b>),
+      que es la forma representada:</p>
+      <div class="eqn box">\( \sigma = K_H\,(\varepsilon_0 + \varepsilon_p)^{n} ,\qquad \varepsilon_0 = \Big(\dfrac{\sigma_y}{K_H}\Big)^{1/n} \;\Rightarrow\; \sigma = \sigma_y \text{ cuando } \varepsilon_p = 0 \)</div>
+      <p>K<sub>H</sub> y n siguen siendo parámetros libres y el módulo de Young no interviene. A diferencia de Ludwik,
+      la pendiente al inicio de la plastificación es <b>finita</b>, \( d\sigma/d\varepsilon_p = nK_H\,\varepsilon_0^{\,n-1} \).</p>
 
       <h4>4 · Ludwik</h4>
       <div class="eqn box">\( \sigma = \sigma_y + K_L\,\varepsilon_p^{\,n_L} \)</div>
       <p>Añade a la ley de Hollomon un término aditivo de límite elástico, de modo que la rama plástica
-      <b>se inicia en σ<sub>y</sub></b> (σ = σ<sub>y</sub> cuando ε<sub>p</sub> = 0). Corrige así la principal limitación de Hollomon.</p>
+      <b>se inicia en σ<sub>y</sub></b> (σ = σ<sub>y</sub> cuando ε<sub>p</sub> = 0). Para n &lt; 1 la pendiente al
+      inicio de la plastificación es infinita.</p>
 
       <h4>5 · Ramberg–Osgood</h4>
       <div class="eqn box">\( \varepsilon = \dfrac{\sigma}{E} + \alpha\Big(\dfrac{\sigma}{\sigma_y}\Big)^{m} , \qquad \alpha = 0{,}002 \)</div>
@@ -586,19 +593,20 @@ const M4=mapper(cv4,0,0.05,0,596.2);
 function draw4(){
   const E=P.E4*1e3, Y=P.Y4, H=P.H4, KH=P.KH, nH=P.nH, KL=P.KL, nL=P.nL, m=P.m4;
   const ey=Y/E, N=400;
-  const eps=[],epp=[],lin=[],lud=[],holX=[],holY=[];
+  const e0=Math.pow(Y/KH, 1/nH);              // deformación previa de Swift: σ(ε_p=0) = σ_y
+  const eps=[],epp=[],lin=[],lud=[],hol=[];
   for(let i=0;i<=N;i++){ const x=1e-6+i/N*0.05; eps.push(x);
     const ep=Math.max(x-ey,0);
     epp.push(x<=ey? E*x : Y);
     lin.push(x<=ey? E*x : Y+H*(x-ey));
     lud.push(x<=ey? E*x : Y+KL*Math.pow(ep,nL));
-    if(x>ey){ holX.push(x); holY.push(KH*Math.pow(ep,nH)); }
+    hol.push(x<=ey? E*x : KH*Math.pow(e0+ep,nH));
   }
   axes(g4,M4,[0,0.01,0.02,0.03,0.04,0.05],[0,100,200,300,400,500,600],
        'deformación  ε  (–)','tensión  σ  (MPa)', v=>v.toFixed(2), v=>v);
   line(g4,M4,eps,epp,'#2E6FB0',2);
   line(g4,M4,eps,lin,'#E08A00',2);
-  line(g4,M4,holX,holY,'#2CA02C',2);
+  line(g4,M4,eps,hol,'#2CA02C',2);
   line(g4,M4,eps,lud,'#C0392B',2);
   // Ramberg-Osgood: eps(σ)
   const rx=[],ry=[]; const smax=Math.max(Y*1.8, lud[N]);
