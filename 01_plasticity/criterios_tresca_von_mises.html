@@ -232,7 +232,7 @@
     y otra asociada al cambio de forma (<b>energía de distorsión</b>):</p>
     <div class="eqn box">\( W = W_{\text{vol}} + W_{\text{dist}} , \qquad W_{\text{dist}} = \dfrac{1}{12G}\Big[(\sigma_1-\sigma_2)^{2} + (\sigma_2-\sigma_3)^{2} + (\sigma_3-\sigma_1)^{2}\Big] = \dfrac{J_2'}{2G} \)</div>
     <p>El criterio establece que la plastificación se inicia cuando W<sub>dist</sub> alcanza el valor que tiene en el
-    ensayo de tracción en el momento de la fluencia, \( W_{\text{dist}} = \sigma_y^{2}/(6G) \), lo que equivale a
+    ensayo de tracción al inicio de la plastificación, \( W_{\text{dist}} = \sigma_y^{2}/(6G) \), lo que equivale a
     \( J_2' = \sigma_y^{2}/3 \).</p>
 
     <h4>Interpretación mediante la tensión tangencial octaédrica</h4>
@@ -345,7 +345,7 @@
         <div><span class="pill" style="background:#fbe3c8;color:#b35f00">naranja</span> no admisible según Tresca · elástico según Von Mises</div>
         <div><span class="pill" style="background:#f7dcd8;color:#C0392B">rojo</span> no admisible según Tresca · plastificación según Von Mises (sobre la elipse)</div>
         <div><span class="pill" style="background:#ddd;color:#111">negro</span> no admisible según ambos criterios</div>
-        <div style="color:var(--muted);margin-top:5px">La plastificación solo se produce sobre la superficie de fluencia (tolerancia ±2 %).
+        <div style="color:var(--muted);margin-top:5px">Solo plastifican los estados situados sobre la superficie de plastificación (tolerancia ±2 %).
           Un estado exterior no es admisible: con el σ<sub>y</sub> inicial, el material plastifica antes de alcanzarlo.</div>
       </div>
     </div>
@@ -572,7 +572,7 @@ function verdict(){
   const s1 = PR.s1, s2 = PR.s2;
   const svm = vmPlane(P.sxx, P.syy, P.txy);        // = vonMises(s1,s2,0)
   const st  = tresca3(s1, s2, 0);
-  // Estado respecto a cada superficie de fluencia inicial: dentro (elástico), sobre ella
+  // Estado respecto a cada superficie de plastificación inicial: dentro (elástico), sobre ella
   // (plastificación, con tolerancia TOL) o fuera (no admisible: el material habría
   // plastificado antes de alcanzarlo).
   const cls = r => r < 1-TOL ? 'in' : (r <= 1+TOL ? 'on' : 'out');

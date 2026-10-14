@@ -288,7 +288,7 @@
 <section id="leyes">
   <h2>Leyes empíricas tensión–deformación</h2>
   <p class="lead">Se comparan cinco modelos con los mismos <span class="f">E</span> y <span class="f">σ<sub>y</sub></span>.
-    <b>Hollomon</b> (σ = K<sub>H</sub>εₚⁿ) carece de término de límite elástico; para que empalme con el
+    <b>Hollomon</b> (σ = K<sub>H</sub>εₚⁿ) carece de término de límite elástico; para garantizar la continuidad con el
     tramo elástico en σ<sub>y</sub> se representa en la forma de <b>Swift</b>, σ = K<sub>H</sub>(ε₀ + εₚ)ⁿ.
     <b>Ludwik</b> (σ = σ<sub>y</sub> + K<sub>L</sub>εₚ<sup>n<sub>L</sub></sup>) incorpora el límite elástico de forma
     aditiva. <b>Ramberg–Osgood</b> emplea el límite
@@ -335,7 +335,7 @@
     <summary>Ver teoría: ecuaciones de las leyes de endurecimiento</summary>
     <div class="body">
       <p>Se busca representar analíticamente la <b>parte plástica</b> de la curva σ–ε. Con la
-      deformación de fluencia ε<sub>y</sub> = σ<sub>y</sub>/E y la deformación plástica ε<sub>p</sub> ≈ ε − ε<sub>y</sub>, las cinco leyes son:</p>
+      deformación en el límite elástico ε<sub>y</sub> = σ<sub>y</sub>/E y la deformación plástica ε<sub>p</sub> ≈ ε − ε<sub>y</sub>, las cinco leyes son:</p>
 
       <h4>1 · Elástico – perfectamente plástico</h4>
       <div class="eqn box">\( \sigma = E\varepsilon \ \ (\varepsilon \le \varepsilon_y) \qquad|\qquad \sigma = \sigma_y \ \ (\varepsilon > \varepsilon_y) \)</div>
@@ -351,7 +351,7 @@
       <ul>
         <li><b>K<sub>H</sub></b> = coeficiente de resistencia; <b>n</b> = exponente de endurecimiento por deformación (n = 0 ⟹ perfectamente plástico).</li>
         <li>Ambos se obtienen <b>ajustando la zona plástica</b>: en ejes log σ – log ε_p la ley es una recta de pendiente n y ordenada en el origen log K<sub>H</sub>. De ahí K<sub>H</sub> = σ(ε_p = 1).</li>
-        <li><b>Carece de término de límite elástico</b>: σ → 0 cuando ε<sub>p</sub> → 0, de modo que por sí sola no empalma con el tramo elástico.</li>
+        <li><b>Carece de término de límite elástico</b>: σ → 0 cuando ε<sub>p</sub> → 0, de modo que por sí sola no es continua con el tramo elástico.</li>
       </ul>
       <p>Para que la curva empiece en σ<sub>y</sub> se introduce una deformación previa ε<sub>0</sub> (<b>ley de Swift</b>),
       que es la forma representada:</p>
@@ -496,7 +496,7 @@ function draw1(){
     if(eps[i] <= epsLim){ uEps.push(eps[i]); uSig.push(sig[i]); uE.push(toE(eps[i])); uS.push(toS(sig[i],eps[i])); }
     else { nEps.push(eps[i]); nSig.push(sig[i]); nE.push(toE(eps[i])); nS.push(toS(sig[i],eps[i])); }
   }
-  // empalme exacto en el punto límite
+  // continuidad exacta en el punto límite
   uEps.push(epsLim); uSig.push(sigLim); uE.push(toE(epsLim)); uS.push(toS(sigLim,epsLim));
   if(neck){ nEps.unshift(epsLim); nSig.unshift(sigLim); nE.unshift(toE(epsLim)); nS.unshift(toS(sigLim,epsLim)); }
 
