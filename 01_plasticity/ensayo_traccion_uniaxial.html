@@ -288,8 +288,9 @@
 <section id="leyes">
   <h2>Leyes empíricas tensión–deformación</h2>
   <p class="lead">Se comparan cinco modelos con los mismos <span class="f">E</span> y <span class="f">σ<sub>y</sub></span>.
-    <b>Hollomon</b> (σ = K<sub>H</sub>εₚⁿ) carece de término de límite elástico; para garantizar la continuidad con el
-    tramo elástico en σ<sub>y</sub> se representa en la forma de <b>Swift</b>, σ = K<sub>H</sub>(ε₀ + εₚ)ⁿ.
+    <b>Hollomon</b> se representa en función de la deformación total, σ = K<sub>H</sub>εⁿ, despreciando la
+    deformación elástica: la curva es σ = mín(Eε, K<sub>H</sub>εⁿ) y su límite elástico <i>aparente</i> σ* (●&nbsp;verde)
+    queda determinado por K<sub>H</sub>, n y E, no por σ<sub>y</sub>.
     <b>Ludwik</b> (σ = σ<sub>y</sub> + K<sub>L</sub>εₚ<sup>n<sub>L</sub></sup>) incorpora el límite elástico de forma
     aditiva. <b>Ramberg–Osgood</b> emplea el límite
     elástico convencional del 0,2 %, por lo que alcanza σ<sub>y</sub> en ε<sub>y</sub> + 0,002 (cuadrado ■) y no en
@@ -318,12 +319,13 @@
       <div class="ctrl"><label>exponente m <span class="val" id="v_m4">8</span></label>
         <input type="range" id="m4" min="2" max="25" step="1" value="8"></div>
       <button data-reset="4">Restablecer</button>
+      <div class="status" id="st4"></div>
     </div>
     <div>
       <div class="legend">
         <span><i class="sw" style="border-color:var(--c1)"></i>elást.–perf. plástico</span>
         <span><i class="sw" style="border-color:var(--c2)"></i>elást.–lineal (H)</span>
-        <span><i class="sw" style="border-color:var(--c3)"></i>Hollomon (Swift)</span>
+        <span><i class="sw" style="border-color:var(--c3)"></i>Hollomon</span>
         <span><i class="sw" style="border-color:var(--c4)"></i>Ludwik</span>
         <span><i class="sw" style="border-color:var(--c5);border-top-style:dashed"></i>Ramberg–Osgood</span>
       </div>
@@ -347,17 +349,21 @@
       tangente total cumple 1/E_t = 1/E + 1/H.</p>
 
       <h4>3 · Hollomon (ley potencial)</h4>
-      <div class="eqn box">\( \sigma = K_H\,\varepsilon_p^{\,n} \qquad (0 \le n \le 1) \)</div>
+      <div class="eqn box">\( \sigma = K_H\,\varepsilon^{\,n} \qquad (0 \le n \le 1) \)</div>
       <ul>
         <li><b>K<sub>H</sub></b> = coeficiente de resistencia; <b>n</b> = exponente de endurecimiento por deformación (n = 0 ⟹ perfectamente plástico).</li>
-        <li>Ambos se obtienen <b>ajustando la zona plástica</b>: en ejes log σ – log ε_p la ley es una recta de pendiente n y ordenada en el origen log K<sub>H</sub>. De ahí K<sub>H</sub> = σ(ε_p = 1).</li>
-        <li><b>Carece de término de límite elástico</b>: σ → 0 cuando ε<sub>p</sub> → 0, de modo que por sí sola no es continua con el tramo elástico.</li>
+        <li>Ambos se obtienen <b>ajustando la zona plástica</b>: en ejes log σ – log ε la ley es una recta de pendiente n y ordenada en el origen log K<sub>H</sub>. De ahí K<sub>H</sub> = σ(ε = 1).</li>
+        <li>Se escribe en función de la <b>deformación total</b> ε, despreciando la deformación elástica. La aproximación es
+        adecuada en la zona plástica, donde ε<sub>e</sub> = σ/E ~ 10<sup>−3</sup> es muy inferior a ε<sub>p</sub> ~ 10<sup>−2</sup>–10<sup>−1</sup>.
+        Es la misma forma empleada en el criterio de Considère (ε<sub>estr</sub> = n).</li>
+        <li><b>Carece de término de límite elástico</b>: para n &lt; 1 la ley queda por encima de la recta elástica a
+        deformaciones pequeñas, por lo que se toma el menor de ambos valores:</li>
       </ul>
-      <p>Para que la curva empiece en σ<sub>y</sub> se introduce una deformación previa ε<sub>0</sub> (<b>ley de Swift</b>),
-      que es la forma representada:</p>
-      <div class="eqn box">\( \sigma = K_H\,(\varepsilon_0 + \varepsilon_p)^{n} ,\qquad \varepsilon_0 = \Big(\dfrac{\sigma_y}{K_H}\Big)^{1/n} \;\Rightarrow\; \sigma = \sigma_y \text{ cuando } \varepsilon_p = 0 \)</div>
-      <p>K<sub>H</sub> y n siguen siendo parámetros libres y el módulo de Young no interviene. A diferencia de Ludwik,
-      la pendiente al inicio de la plastificación es <b>finita</b>, \( d\sigma/d\varepsilon_p = nK_H\,\varepsilon_0^{\,n-1} \).</p>
+      <div class="eqn box">\( \sigma = \min\big(E\varepsilon,\; K_H\,\varepsilon^{\,n}\big) \)</div>
+      <p>La intersección de ambas ramas define el <b>límite elástico aparente</b>:</p>
+      <div class="eqn box">\( E\varepsilon^{*} = K_H\,(\varepsilon^{*})^{n} \;\Rightarrow\; \varepsilon^{*} = \Big(\dfrac{K_H}{E}\Big)^{1/(1-n)} ,\qquad \sigma^{*} = E\,\varepsilon^{*} = \big(K_H\,E^{-n}\big)^{1/(1-n)} \)</div>
+      <p>σ* es un <b>resultado</b> de K<sub>H</sub>, n y E, no un parámetro de la ley: el deslizador de σ<sub>y</sub> no
+      modifica esta curva. En σ* la curva es continua, pero presenta un punto anguloso (cambio brusco de pendiente).</p>
 
       <h4>4 · Ludwik</h4>
       <div class="eqn box">\( \sigma = \sigma_y + K_L\,\varepsilon_p^{\,n_L} \)</div>
@@ -593,14 +599,14 @@ const M4=mapper(cv4,0,0.05,0,596.2);
 function draw4(){
   const E=P.E4*1e3, Y=P.Y4, H=P.H4, KH=P.KH, nH=P.nH, KL=P.KL, nL=P.nL, m=P.m4;
   const ey=Y/E, N=400;
-  const e0=Math.pow(Y/KH, 1/nH);              // deformación previa de Swift: σ(ε_p=0) = σ_y
+  const es=Math.pow(KH/E, 1/(1-nH)), ss=E*es;  // Hollomon: límite elástico aparente (Eε = K_H εⁿ)
   const eps=[],epp=[],lin=[],lud=[],hol=[];
   for(let i=0;i<=N;i++){ const x=1e-6+i/N*0.05; eps.push(x);
     const ep=Math.max(x-ey,0);
     epp.push(x<=ey? E*x : Y);
     lin.push(x<=ey? E*x : Y+H*(x-ey));
     lud.push(x<=ey? E*x : Y+KL*Math.pow(ep,nL));
-    hol.push(x<=ey? E*x : KH*Math.pow(e0+ep,nH));
+    hol.push(Math.min(E*x, KH*Math.pow(x,nH)));
   }
   axes(g4,M4,[0,0.01,0.02,0.03,0.04,0.05],[0,100,200,300,400,500,600],
        'deformación  ε  (–)','tensión  σ  (MPa)', v=>v.toFixed(2), v=>v);
@@ -625,6 +631,14 @@ function draw4(){
   line(g4,M4,ox,oy,'#9AA6B2',1,[2,3]);
   marker(g4,M4,ey+OFFSET,Y,'#5B6675',true);
   g4.fillStyle='#5B6675'; g4.fillText('conv. 0,2 % (R-O)', M4.px(ey+OFFSET)+8, M4.py(Y)-8);
+  // círculo verde: límite elástico aparente de Hollomon
+  if(ss<M4.ymax){
+    dot(g4,M4,es,ss,'#2CA02C',4.5);
+    g4.fillStyle='#2CA02C'; g4.fillText('σ* (Hollomon)', M4.px(es)+24, M4.py(ss)+38);
+  }
+  document.getElementById('st4').innerHTML =
+    'Hollomon: límite elástico aparente <b>σ* = '+ss.toFixed(0)+' MPa</b> en ε* = '+es.toFixed(4)+
+    ' (σ<sub>y</sub> = '+Y.toFixed(0)+' MPa).';
 }
 
 // ---------- control ----------
