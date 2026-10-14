@@ -208,37 +208,15 @@
       <div class="key"><b>Conversión:</b> &nbsp; \( \varepsilon = \ln(1 + e) \) &nbsp;·&nbsp; \( \sigma = S(1 + e) \). &nbsp;
         Como \((1+e) > 1\), la curva verdadera queda siempre <b>por encima</b> de la ingenieril.</div>
 
-      <p><b>Validez.</b> Estas conversiones suponen deformación <b>uniforme</b> en toda la probeta,
-      lo que solo se cumple <b>hasta la estricción</b>. A partir de ahí la deformación se localiza
-      en el cuello y A, L dejan de ser uniformes (por eso el tramo ingenieril se dibuja discontinuo).</p>
+      <p><b>Validez.</b> Estas relaciones suponen deformación <b>uniforme</b> en toda la probeta, lo que
+      solo se cumple <b>hasta la estricción</b>, es decir, hasta el máximo de carga (S<sub>máx</sub>). A partir
+      de ahí la deformación se localiza en el cuello y la tensión verdadera solo puede obtenerse midiendo la
+      sección del cuello (corrección de Bridgman).</p>
 
-      <p><b>Límite elástico convencional σ<sub>y</sub> (R<sub>p0,2</sub>).</b> En el ensayo el inicio de la
-      plastificación no suele ser nítido, así que se define por convenio: es la tensión que deja una
-      deformación plástica remanente del 0,2 % (ε<sub>p</sub> = 0,002). Gráficamente es el corte de la curva
-      con una recta paralela al tramo elástico desplazada 0,002 (cuadrado gris).</p>
-
-      <h4>Modelo de material empleado en la gráfica</h4>
-      <p>La deformación verdadera total es la suma de una parte elástica y otra plástica, y el endurecimiento
-      se describe con la ley de Hollomon referida a la deformación <b>plástica</b>, anclada en el límite
-      elástico convencional (σ = σ<sub>y</sub> cuando ε<sub>p</sub> = 0,002):</p>
-      <div class="eqn box">\( \varepsilon = \dfrac{\sigma}{E} + \varepsilon_p ,\qquad \sigma = K\,\varepsilon_p^{\,n} ,\qquad K = \dfrac{\sigma_y}{0{,}002^{\,n}} \)</div>
-      <p>Eliminando ε<sub>p</sub> queda una relación de tipo Ramberg–Osgood (con m = 1/n):</p>
-      <div class="eqn box">\( \varepsilon = \dfrac{\sigma}{E} + 0{,}002\left(\dfrac{\sigma}{\sigma_y}\right)^{1/n} \)</div>
-      <p>Como K solo depende de σ<sub>y</sub> y de n, <b>el módulo de Young solo interviene en la parte
-      elástica</b>: cambiar E modifica la pendiente inicial, pero apenas mueve la curva plástica ni la
-      resistencia a tracción.</p>
-
-      <h4>De la curva ingenieril a la verdadera</h4>
-      <p><b>Paso 1 (ensayo).</b> Con el modelo se simula lo que registra la máquina: para cada deformación
-      verdadera se obtienen \( e = \exp(\varepsilon) - 1 \) y \( S = \sigma\,\exp(-\varepsilon) \).
-      La curva termina en la rotura, con el alargamiento A. El tramo posterior a S<sub>máx</sub> se dibuja de forma <b>esquemática</b>: en un ensayo real la carga cae más deprisa, porque la deformación se concentra en el cuello.</p>
-      <p><b>Paso 2 (conversión).</b> Con \( \sigma = S(1+e) \) y \( \varepsilon = \ln(1+e) \) se recupera la
-      curva verdadera, pero <b>solo hasta S<sub>máx</sub></b>. A partir de ahí la deformación se concentra en el
-      cuello y la conversión deja de ser válida; la tensión verdadera real en el cuello exige medir su sección
-      (corrección de Bridgman).</p>
-      <p><b>Resistencia a tracción.</b> Aplicando Considère (dσ/dε = σ) a este modelo se obtiene
-      \( \varepsilon_{p,u} = n\,(1 - \sigma_u/E) \approx n \): la deformación plástica uniforme coincide, en la
-      práctica, con el exponente de endurecimiento.</p>
+      <p><b>Límite elástico convencional σ<sub>y</sub> (R<sub>p0,2</sub>).</b> El inicio de la plastificación
+      no suele ser nítido, así que se define por convenio como la tensión que deja una deformación plástica
+      remanente del 0,2 % (ε<sub>p</sub> = 0,002). Se obtiene cortando la curva con una recta paralela al
+      tramo elástico desplazada 0,002.</p>
     </div>
   </details>
 </section>
